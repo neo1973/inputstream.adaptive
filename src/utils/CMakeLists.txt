@@ -6,6 +6,7 @@ set(SOURCES
   FileUtils.cpp
   JsonUtils.cpp
   StringUtils.cpp
+  ThreadPool.cpp
   UrlUtils.cpp
   Utils.cpp
   XMLUtils.cpp
@@ -21,6 +22,7 @@ set(HEADERS
   JsonUtils.h
   log.h
   StringUtils.h
+  ThreadPool.h
   UrlUtils.h
   Utils.h
   XMLUtils.h
