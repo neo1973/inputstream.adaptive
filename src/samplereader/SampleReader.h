@@ -9,6 +9,7 @@
 #pragma once
 
 #include "utils/CryptoUtils.h"
+#include "utils/ThreadPool.h"
 
 #include <bento4/Ap4.h>
 
@@ -96,7 +97,8 @@ public:
    */
   void ReadSampleAsync()
   {
-    m_readSampleAsyncState = std::async(std::launch::async, &ISampleReader::ReadSample, this);
+    m_readSampleAsyncState =
+        UTILS::THREAD::GlobalThreadPool.Execute(&ISampleReader::ReadSample, this);
   }
 
   /*!
