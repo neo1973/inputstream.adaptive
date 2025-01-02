@@ -84,12 +84,12 @@ double UTILS::XML::ParseDuration(std::string_view durationStr)
     return 0;
   }
 
-  double years = STRING::ToDouble(matches[1].str());
-  double months = STRING::ToDouble(matches[2].str());
-  double days = STRING::ToDouble(matches[3].str());
-  double hours = STRING::ToDouble(matches[4].str());
-  double minutes = STRING::ToDouble(matches[5].str());
-  double seconds = STRING::ToDouble(matches[6].str());
+  double years = STRING::ToDouble({matches[1].first, matches[1].second});
+  double months = STRING::ToDouble({matches[2].first, matches[2].second});
+  double days = STRING::ToDouble({matches[3].first, matches[3].second});
+  double hours = STRING::ToDouble({matches[4].first, matches[4].second});
+  double minutes = STRING::ToDouble({matches[5].first, matches[5].second});
+  double seconds = STRING::ToDouble({matches[6].first, matches[6].second});
 
   // Assume a year always has 365 days and a month always has 30 days.
   return years * (60 * 60 * 24 * 365) + months * (60 * 60 * 24 * 30) + days * (60 * 60 * 24) +
