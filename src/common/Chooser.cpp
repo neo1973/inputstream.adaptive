@@ -124,18 +124,19 @@ void CHOOSER::IRepresentationChooser::LogDetails(PLAYLIST::CRepresentation* curr
   {
     LOG::Log(LOGDEBUG,
              "[Repr. chooser] Selected representation\n"
-             "ID %s (Bandwidth: %u bit/s, Resolution: %ix%i)",
-             nextRep->GetId().data(), nextRep->GetBandwidth(), nextRep->GetWidth(),
-             nextRep->GetHeight());
+             "ID %.*s (Bandwidth: %u bit/s, Resolution: %ix%i)",
+             static_cast<int>(nextRep->GetId().length()), nextRep->GetId().data(),
+             nextRep->GetBandwidth(), nextRep->GetWidth(), nextRep->GetHeight());
   }
   else if (currentRep != nextRep)
   {
     LOG::Log(LOGDEBUG,
              "[Repr. chooser] Changed representation\n"
-             "Current ID %s (Bandwidth: %u bit/s, Resolution: %ix%i)\n"
-             "Next ID %s (Bandwidth: %u bit/s, Resolution: %ix%i)",
-             currentRep->GetId().data(), currentRep->GetBandwidth(), currentRep->GetWidth(),
-             currentRep->GetHeight(), nextRep->GetId().data(), nextRep->GetBandwidth(),
-             nextRep->GetWidth(), nextRep->GetHeight());
+             "Current ID %.*s (Bandwidth: %u bit/s, Resolution: %ix%i)\n"
+             "Next ID %.*s (Bandwidth: %u bit/s, Resolution: %ix%i)",
+             static_cast<int>(currentRep->GetId().length()), currentRep->GetId().data(),
+             currentRep->GetBandwidth(), currentRep->GetWidth(), currentRep->GetHeight(),
+             static_cast<int>(nextRep->GetId().length()), nextRep->GetId().data(),
+             nextRep->GetBandwidth(), nextRep->GetWidth(), nextRep->GetHeight());
   }
 }
