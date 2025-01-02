@@ -54,7 +54,8 @@ void JNIThread(JavaVM* vm)
 
 std::vector<std::string_view> CWVDecrypterA::SelectKeySystems(std::string_view keySystem)
 {
-  LOG::Log(LOGDEBUG, "Key system request: %s", keySystem);
+  LOG::Log(LOGDEBUG, "Key system request: %.*s", static_cast<int>(keySystem.length()),
+           keySystem.data());
 
   if (keySystem == KS_WIDEVINE)
   {
