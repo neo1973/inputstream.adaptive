@@ -127,7 +127,8 @@ bool SESSION::CSession::Initialize(std::string manifestUrl)
     SetSupportedDecrypterURN(supportedKeySystems);
     for (std::string_view keySystem : supportedKeySystems)
     {
-      LOG::Log(LOGDEBUG, "Supported URN: %s", keySystem.data());
+      LOG::Log(LOGDEBUG, "Supported URN: %.*s", static_cast<int>(keySystem.length()),
+               keySystem.data());
     }
   }
 
@@ -223,8 +224,8 @@ void SESSION::CSession::CheckHDCP()
       if (repr->GetHdcpVersion() > ssd_caps.hdcpVersion ||
           (ssd_caps.hdcpLimit > 0 && repr->GetWidth() * repr->GetHeight() > ssd_caps.hdcpLimit))
       {
-        LOG::Log(LOGDEBUG, "Representation ID \"%s\" removed as not HDCP compliant",
-                 repr->GetId().data());
+        LOG::Log(LOGDEBUG, "Representation ID \"%.*s\" removed as not HDCP compliant",
+                 static_cast<int>(repr->GetId().length()), repr->GetId().data());
         itRepr = adp->GetRepresentations().erase(itRepr);
       }
       else
@@ -577,8 +578,9 @@ bool SESSION::CSession::InitializePeriod(bool isSessionOpened /* = false */)
 
     if (adp->GetStreamType() == StreamType::NOTYPE)
     {
-      LOG::LogF(LOGDEBUG, "Skipped streams on adaptation set id \"%s\" due to unsupported/unknown type",
-                adp->GetId().data());
+      LOG::LogF(LOGDEBUG,
+                "Skipped streams on adaptation set id \"%.*s\" due to unsupported/unknown type",
+                static_cast<int>(adp->GetId().length()), adp->GetId().data());
       continue;
     }
 
@@ -697,8 +699,8 @@ void SESSION::CSession::UpdateStream(CStream& stream)
 
   if (rep->GetContainerType() == ContainerType::INVALID)
   {
-    LOG::LogF(LOGERROR, "Container type not valid on stream representation ID: %s",
-              rep->GetId().data());
+    LOG::LogF(LOGERROR, "Container type not valid on stream representation ID: %.*s",
+              static_cast<int>(rep->GetId().length()), rep->GetId().data());
     stream.m_isValid = false;
     return;
   }
@@ -1365,7 +1367,7 @@ std::string SESSION::CSession::GetChapterName(int ch) const
   {
     --ch;
     if (ch >= 0 && ch < static_cast<int>(m_adaptiveTree->m_periods.size()))
-      return m_adaptiveTree->m_periods[ch]->GetId().data();
+      return std::string{m_adaptiveTree->m_periods[ch]->GetId()};
   }
 
   return "[Unknown]";
@@ -1428,8 +1430,9 @@ bool SESSION::CSession::SeekChapter(int ch)
   {
     CPeriod* nextPeriod = m_adaptiveTree->m_periods[ch].get();
     m_adaptiveTree->m_nextPeriod = nextPeriod;
-    LOG::LogF(LOGDEBUG, "Switching to new Period (id=%s, start=%llu, seq=%u)",
-              nextPeriod->GetId().data(), nextPeriod->GetStart(), nextPeriod->GetSequence());
+    LOG::LogF(LOGDEBUG, "Switching to new Period (id=%.*s, start=%llu, seq=%u)",
+              static_cast<int>(nextPeriod->GetId().length()), nextPeriod->GetId().data(),
+              nextPeriod->GetStart(), nextPeriod->GetSequence());
 
     for (auto& stream : m_streams)
     {
