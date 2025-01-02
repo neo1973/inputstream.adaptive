@@ -22,24 +22,6 @@
 using namespace UTILS::STRING;
 using namespace kodi::tools;
 
-namespace
-{
-/*!
- * \brief Converts a string to a number of a specified type, by using istringstream.
- * \param str The string to convert
- * \param fallback [OPT] The number to return when the conversion fails
- * \return The converted number, otherwise fallback if conversion fails
- */
-template<typename T>
-T NumberFromSS(std::string_view str, T fallback) noexcept
-{
-  std::istringstream iss{str.data()};
-  T result{fallback};
-  iss >> result;
-  return result;
-}
-} // namespace
-
 bool UTILS::STRING::ReplaceFirst(std::string& inputStr,
                                  std::string_view oldStr,
                                  std::string_view newStr)
@@ -161,22 +143,30 @@ std::string UTILS::STRING::URLEncode(std::string_view strURLData)
 
 uint32_t UTILS::STRING::ToUint32(std::string_view str, uint32_t fallback /* = 0 */)
 {
-  return NumberFromSS(str, fallback);
+  uint32_t result = fallback;
+  std::from_chars(str.data(), str.data() + str.size(), result);
+  return result;
 }
 
 uint64_t UTILS::STRING::ToUint64(std::string_view str, uint64_t fallback /* = 0 */)
 {
-  return NumberFromSS(str, fallback);
+  uint64_t result = fallback;
+  std::from_chars(str.data(), str.data() + str.size(), result);
+  return result;
 }
 
 double UTILS::STRING::ToDouble(std::string_view str, double fallback)
 {
-  return NumberFromSS(str, fallback);
+  double result = fallback;
+  std::from_chars(str.data(), str.data() + str.size(), result);
+  return result;
 }
 
 float UTILS::STRING::ToFloat(std::string_view str, float fallback)
 {
-  return NumberFromSS(str, fallback);
+  float result = fallback;
+  std::from_chars(str.data(), str.data() + str.size(), result);
+  return result;
 }
 
 int UTILS::STRING::ToInt32(std::string_view str, int fallback /* = 0 */)
@@ -211,7 +201,8 @@ std::set<std::string> UTILS::STRING::SplitToSet(std::string_view input,
                                                 int maxStrings /* = 0 */)
 {
   std::set<std::string> result;
-  StringUtils::SplitTo(std::inserter(result, result.end()), input.data(), delimiter, maxStrings);
+  StringUtils::SplitTo(std::inserter(result, result.end()), std::string(input), delimiter,
+                       maxStrings);
   return result;
 }
 
@@ -220,7 +211,7 @@ std::vector<std::string> UTILS::STRING::SplitToVec(std::string_view input,
                                                    int maxStrings /* = 0 */)
 {
   std::vector<std::string> result;
-  StringUtils::SplitTo(std::back_inserter(result), input.data(), delimiter, maxStrings);
+  StringUtils::SplitTo(std::back_inserter(result), std::string(input), delimiter, maxStrings);
   return result;
 }
 
