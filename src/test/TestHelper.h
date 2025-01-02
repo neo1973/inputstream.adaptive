@@ -77,11 +77,11 @@ protected:
   virtual bool Download(const DownloadInfo& downloadInfo, std::vector<uint8_t>& data) override;
 };
 
-class AESDecrypter : public IAESDecrypter
+class AESDecrypterTest : public IAESDecrypter
 {
 public:
-  AESDecrypter(const std::string& licenseKey) : m_licenseKey(licenseKey){};
-  virtual ~AESDecrypter() = default;
+  AESDecrypterTest(const std::string& licenseKey) : m_licenseKey(licenseKey) {};
+  virtual ~AESDecrypterTest() = default;
 
   void decrypt(const AP4_UI08* aes_key,
                const AP4_UI08* aes_iv,
@@ -93,7 +93,7 @@ public:
   std::string convertIV(const std::string& input);
   void ivFromSequence(uint8_t* buffer, uint64_t sid);
   const std::string& getLicenseKey() const { return m_licenseKey; };
-  bool RenewLicense(const std::string& pluginUrl);
+  // bool RenewLicense(const std::string& pluginUrl);
 
 private:
   std::string m_licenseKey;
