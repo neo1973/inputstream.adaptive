@@ -85,7 +85,7 @@ std::unordered_set<Cookie> ParseCookies(std::string_view url,
     if (cookie.m_domain.empty())
     {
       // If empty retrieve the hostname from the url (www.example.com)
-      cookie.m_domain = URL::GetBaseDomain(url.data());
+      cookie.m_domain = URL::GetBaseDomain(std::string(url));
       const size_t protStartPos = cookie.m_domain.find("://");
       if (protStartPos != std::string::npos)
         cookie.m_domain.erase(0, protStartPos + 3);
@@ -94,7 +94,7 @@ std::unordered_set<Cookie> ParseCookies(std::string_view url,
     if (cookie.m_path.empty())
     {
       // When empty fallback to current url path
-      cookie.m_path = URL::GetPath(url.data(), true);
+      cookie.m_path = URL::GetPath(std::string(url), true);
     }
 
     cookieList.emplace(cookie);
@@ -108,7 +108,7 @@ std::string GetCookies(std::string_view url)
   std::lock_guard<std::mutex> lock(srvResources.GetCookiesMutex());
 
   // Get hostname (www.example.com)
-  std::string hostname = URL::GetBaseDomain(url.data());
+  std::string hostname = URL::GetBaseDomain(std::string(url));
   const size_t protStartPos = hostname.find("://");
   if (protStartPos != std::string::npos)
     hostname.erase(0, protStartPos + 3);
@@ -119,7 +119,7 @@ std::string GetCookies(std::string_view url)
   if (dotPos != std::string::npos)
     domain.erase(0, dotPos);
 
-  std::string urlPath = URL::GetPath(url.data(), true);
+  std::string urlPath = URL::GetPath(std::string(url), true);
 
   std::string cookiesStr;
   std::unordered_set<Cookie>& cookies = srvResources.Cookies();
@@ -183,7 +183,7 @@ void StoreCookies(std::string_view url, const std::vector<std::string>& cookiesS
 
 UTILS::CURL::CUrl::CUrl(std::string_view url)
 {
-  if (m_file.CURLCreate(url.data()))
+  if (m_file.CURLCreate(std::string(url)))
   {
     auto& kodiProps = CSrvBroker::GetKodiProps();
 
@@ -236,9 +236,9 @@ int UTILS::CURL::CUrl::Open()
   return -1;
 }
 
-void UTILS::CURL::CUrl::AddHeader(std::string_view name, std::string_view value)
+void UTILS::CURL::CUrl::AddHeader(const std::string& name, const std::string& value)
 {
-  m_file.CURLAddOption(ADDON_CURL_OPTION_HEADER, name.data(), value.data());
+  m_file.CURLAddOption(ADDON_CURL_OPTION_HEADER, name, value);
 }
 
 void UTILS::CURL::CUrl::AddHeaders(const std::map<std::string, std::string>& headers)
@@ -249,14 +249,14 @@ void UTILS::CURL::CUrl::AddHeaders(const std::map<std::string, std::string>& hea
   }
 }
 
-std::string UTILS::CURL::CUrl::GetResponseHeader(std::string_view name)
+std::string UTILS::CURL::CUrl::GetResponseHeader(const std::string& name)
 {
-  return m_file.GetPropertyValue(ADDON_FILE_PROPERTY_RESPONSE_HEADER, name.data());
+  return m_file.GetPropertyValue(ADDON_FILE_PROPERTY_RESPONSE_HEADER, name);
 }
 
-std::vector<std::string> UTILS::CURL::CUrl::GetResponseHeaders(std::string_view name)
+std::vector<std::string> UTILS::CURL::CUrl::GetResponseHeaders(const std::string& name)
 {
-  return m_file.GetPropertyValues(ADDON_FILE_PROPERTY_RESPONSE_HEADER, name.data());
+  return m_file.GetPropertyValues(ADDON_FILE_PROPERTY_RESPONSE_HEADER, name);
 }
 
 std::string UTILS::CURL::CUrl::GetEffectiveUrl()
@@ -334,7 +334,8 @@ bool UTILS::CURL::DownloadFile(std::string_view url,
 
     if (statusCode == -1)
     {
-      LOG::Log(LOGERROR, "Download failed, internal error: %s", url.data());
+      LOG::Log(LOGERROR, "Download failed, internal error: %.*s", static_cast<int>(url.length()),
+               url.data());
       break;
     }
     else if (statusCode >= 500)
@@ -343,7 +344,8 @@ bool UTILS::CURL::DownloadFile(std::string_view url,
     }
     else if (statusCode >= 400)
     {
-      LOG::Log(LOGERROR, "Download failed, HTTP error %d: %s", statusCode, url.data());
+      LOG::Log(LOGERROR, "Download failed, HTTP error %d: %.*s", statusCode,
+               static_cast<int>(url.length()), url.data());
       break;
     }
     else // Start the download
@@ -352,18 +354,20 @@ bool UTILS::CURL::DownloadFile(std::string_view url,
 
       if (curl.Read(resp.data) != CURL::ReadStatus::IS_EOF)
       {
-        LOG::Log(LOGERROR, "Download failed: %s", statusCode, url.data());
+        LOG::Log(LOGERROR, "Download failed: %.*s", statusCode, static_cast<int>(url.length()),
+                 url.data());
         break;
       }
 
       if (resp.data.empty())
       {
-        LOG::Log(LOGERROR, "Download failed, no data: %s", url.data());
+        LOG::Log(LOGERROR, "Download failed, no data: %.*s", static_cast<int>(url.length()),
+                 url.data());
         break;
       }
 
       resp.headers["content-type"] = curl.GetResponseHeader("content-type");
-      for (std::string_view name : respHeaders)
+      for (const std::string& name : respHeaders)
       {
         resp.headers[name.data()] = curl.GetResponseHeader(name);
       }
@@ -371,8 +375,9 @@ bool UTILS::CURL::DownloadFile(std::string_view url,
       resp.downloadSpeed = curl.GetDownloadSpeed();
       resp.dataSize = curl.GetTotalByteRead();
 
-      LOG::Log(LOGDEBUG, "Download finished: %s (downloaded %zu byte, speed %0.2lf byte/s)",
-               url.data(), curl.GetTotalByteRead(), resp.downloadSpeed);
+      LOG::Log(LOGDEBUG, "Download finished: %.*s (downloaded %zu byte, speed %0.2lf byte/s)",
+               static_cast<int>(url.length()), url.data(), curl.GetTotalByteRead(),
+               resp.downloadSpeed);
       return true;
     }
   }
