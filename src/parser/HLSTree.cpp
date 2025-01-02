@@ -176,7 +176,7 @@ bool adaptive::CHLSTree::Open(std::string_view url,
   SaveManifest(nullptr, data, url);
 
   manifest_url_ = url;
-  base_url_ = URL::GetUrlPath(url.data());
+  base_url_ = URL::GetUrlPath(std::string(url));
 
   if (!ParseManifest(data))
   {
@@ -216,8 +216,9 @@ bool adaptive::CHLSTree::DownloadChildManifest(PLAYLIST::CAdaptationSet* adp,
 {
   if (rep->GetSourceUrl().empty())
   {
-    LOG::LogF(LOGERROR, "Cannot download child manifest, no source url on representation id \"%s\"",
-              rep->GetId().data());
+    LOG::LogF(LOGERROR,
+              "Cannot download child manifest, no source url on representation id \"%.*s\"",
+              static_cast<int>(rep->GetId().length()), rep->GetId().data());
     return false;
   }
 
@@ -975,7 +976,8 @@ void adaptive::CHLSTree::PrepareSegments(PLAYLIST::CPeriod* period,
   if (rep->IsWaitForSegment() &&
       (rep->GetNextSegment() || m_currentPeriod != m_periods.back().get()))
   {
-    LOG::LogF(LOGDEBUG, "End WaitForSegment stream id \"%s\"", rep->GetId().data());
+    LOG::LogF(LOGDEBUG, "End WaitForSegment stream id \"%.*s\"",
+              static_cast<int>(rep->GetId().length()), rep->GetId().data());
     rep->SetIsWaitForSegment(false);
   }
 }
@@ -1255,7 +1257,7 @@ PLAYLIST::EncryptionType adaptive::CHLSTree::ProcessEncryption(
 
     m_currentKidUrl = uriUrl;
     if (URL::IsUrlRelative(m_currentKidUrl))
-      m_currentKidUrl = URL::Join(baseUrl.data(), m_currentKidUrl);
+      m_currentKidUrl = URL::Join(std::string(baseUrl), m_currentKidUrl);
 
     m_currentIV = m_decrypter->convertIV(attribs["IV"]);
 
@@ -1334,7 +1336,7 @@ PLAYLIST::EncryptionType adaptive::CHLSTree::ProcessEncryption(
       else
       {
         if (URL::IsUrlRelative(uriUrl))
-          uriUrl = URL::Join(baseUrl.data(), uriUrl);
+          uriUrl = URL::Join(std::string(baseUrl), uriUrl);
 
         UTILS::CURL::HTTPResponse resp;
         if (DownloadKey(uriUrl, {}, {}, resp))
@@ -1394,7 +1396,7 @@ bool adaptive::CHLSTree::GetUriByteData(std::string_view uri, std::vector<uint8_
         return true;
       }
     }
-    LOG::Log(LOGERROR, "Cannot parse URI: %s", uri.data());
+    LOG::Log(LOGERROR, "Cannot parse URI: %.*s", static_cast<int>(uri.length()), uri.data());
     return true;
   }
   return false;
