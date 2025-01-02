@@ -37,7 +37,7 @@ void WriteBigEndianInt(std::vector<uint8_t>& data, const uint32_t value)
 
 std::string DRM::GenerateUrlDomainHash(std::string_view url)
 {
-  std::string baseDomain = URL::GetBaseDomain(url.data());
+  std::string baseDomain = URL::GetBaseDomain(std::string(url));
   // If we are behind a proxy we fall always in to the same domain e.g. "http://localhost/"
   // but we have to differentiate the results based on the service of the add-on hosting the proxy
   // to avoid possible collisions, so we include the first directory path after the domain name
@@ -74,7 +74,8 @@ std::string DRM::UrnToSystemId(std::string_view urn)
 
   if (sysId.size() != 32)
   {
-    LOG::Log(LOGERROR, "Cannot convert URN (%s) to System ID", urn.data());
+    LOG::Log(LOGERROR, "Cannot convert URN (%.*s) to System ID", static_cast<int>(urn.length()),
+             urn.data());
     return "";
   }
   return sysId;
@@ -125,13 +126,13 @@ const uint8_t* DRM::KeySystemToUUID(std::string_view ks)
 std::string DRM::KeySystemToUUIDstr(std::string_view ks)
 {
   if (ks == KS_WIDEVINE)
-    return UUID_WIDEVINE.data();
+    return std::string{UUID_WIDEVINE};
   else if (ks == KS_PLAYREADY)
-    return UUID_PLAYREADY.data();
+    return std::string{UUID_PLAYREADY};
   else if (ks == KS_WISEPLAY)
-    return UUID_WISEPLAY.data();
+    return std::string{UUID_WISEPLAY};
   else if (ks == KS_CLEARKEY)
-    return UUID_CLEARKEY.data();
+    return std::string{UUID_CLEARKEY};
   else
     return "unknown";
 }
@@ -147,7 +148,8 @@ std::vector<uint8_t> DRM::ConvertKidStrToBytes(std::string_view kidStr)
 {
   if (kidStr.size() != 32)
   {
-    LOG::LogF(LOGERROR, "Cannot convert KID \"%s\" as bytes due to wrong size", kidStr.data());
+    LOG::LogF(LOGERROR, "Cannot convert KID \"%.*s\" as bytes due to wrong size",
+              static_cast<int>(kidStr.length()), kidStr.data());
     return {};
   }
 
