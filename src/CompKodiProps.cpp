@@ -69,8 +69,10 @@ constexpr std::string_view PROP_CHOOSER_RES_SECURE_MAX = "inputstream.adaptive.c
 
 void LogProp(std::string_view name, std::string_view value, bool isValueRedacted = false)
 {
-  LOG::Log(LOGDEBUG, "Property found \"%s\" value: %s", name.data(),
-           isValueRedacted ? "[redacted]" : value.data());
+  if (isValueRedacted)
+    value = "[redacted]";
+  LOG::Log(LOGDEBUG, "Property found \"%.*s\" value: %.*s", static_cast<int>(name.length()),
+           name.data(), static_cast<int>(value.length()), value.data());
 }
 
 void LogDrmJsonDictKeys(std::string_view keyName,
@@ -87,8 +89,9 @@ void LogDrmJsonDictKeys(std::string_view keyName,
       keys += it->name.GetString();
     }
     LOG::Log(LOGDEBUG,
-             "Found DRM config for key system: \"%s\" -> Dictionary: \"%s\", Values: \"%s\"",
-             keySystem.data(), keyName.data(), keys.c_str());
+             "Found DRM config for key system: \"%.*s\" -> Dictionary: \"%.*s\", Values: \"%s\"",
+             static_cast<int>(keySystem.length()), keySystem.data(),
+             static_cast<int>(keyName.length()), keyName.data(), keys.c_str());
   }
 }
 } // unnamed namespace
@@ -296,7 +299,8 @@ void ADP::KODI_PROPS::CCompKodiProps::ParseConfig(const std::string& data)
 
   if (!jDoc.IsObject())
   {
-    LOG::LogF(LOGERROR, "Malformed JSON data in to \"%s\" property", PROP_MANIFEST_CONFIG.data());
+    LOG::LogF(LOGERROR, "Malformed JSON data in to \"%.*s\" property",
+              static_cast<int>(PROP_MANIFEST_CONFIG.length()), PROP_MANIFEST_CONFIG.data());
     return;
   }
 
@@ -316,8 +320,9 @@ void ADP::KODI_PROPS::CCompKodiProps::ParseConfig(const std::string& data)
     }
     else
     {
-      LOG::LogF(LOGERROR, "Unsupported \"%s\" config or wrong data type on \"%s\" property",
-                configName.c_str(), PROP_MANIFEST_CONFIG.data());
+      LOG::LogF(LOGERROR, "Unsupported \"%s\" config or wrong data type on \"%.*s\" property",
+                configName.c_str(), static_cast<int>(PROP_MANIFEST_CONFIG.length()),
+                PROP_MANIFEST_CONFIG.data());
     }
   }
 }
@@ -333,7 +338,8 @@ void ADP::KODI_PROPS::CCompKodiProps::ParseManifestConfig(const std::string& dat
 
   if (!jDoc.IsObject())
   {
-    LOG::LogF(LOGERROR, "Malformed JSON data in to \"%s\" property", PROP_MANIFEST_CONFIG.data());
+    LOG::LogF(LOGERROR, "Malformed JSON data in to \"%.*s\" property",
+              static_cast<int>(PROP_MANIFEST_CONFIG.length()), PROP_MANIFEST_CONFIG.data());
     return;
   }
 
@@ -366,8 +372,9 @@ void ADP::KODI_PROPS::CCompKodiProps::ParseManifestConfig(const std::string& dat
     }
     else
     {
-      LOG::LogF(LOGERROR, "Unsupported \"%s\" config or wrong data type on \"%s\" property",
-                configName.c_str(), PROP_MANIFEST_CONFIG.data());
+      LOG::LogF(LOGERROR, "Unsupported \"%s\" config or wrong data type on \"%.*s\" property",
+                configName.c_str(), static_cast<int>(PROP_MANIFEST_CONFIG.length()),
+                PROP_MANIFEST_CONFIG.data());
     }
   }
 }
@@ -399,7 +406,7 @@ void ADP::KODI_PROPS::CCompKodiProps::ParseDrmOldProps(
   */
   std::string drmKeySystem{DRM::KS_NONE};
   if (STRING::KeyExists(props, PROP_LICENSE_TYPE))
-    drmKeySystem = props.at(PROP_LICENSE_TYPE.data());
+    drmKeySystem = props.at(std::string(PROP_LICENSE_TYPE));
 
   LogProp(PROP_LICENSE_TYPE, drmKeySystem);
 
@@ -541,8 +548,8 @@ void ADP::KODI_PROPS::CCompKodiProps::ParseDrmOldProps(
         {
           LOG::Log(
               LOGERROR,
-              "Unknown \"%s\" parameter in the \"response data\" field of license_key property",
-              wrapperPrefix.data());
+              "Unknown \"%.*s\" parameter in the \"response data\" field of license_key property",
+              static_cast<int>(wrapperPrefix.length()), wrapperPrefix.data());
         }
 
         // Parse JSON configuration
@@ -593,7 +600,8 @@ bool ADP::KODI_PROPS::CCompKodiProps::ParseDrmConfig(const std::string& data)
 
   if (!jDoc.IsObject())
   {
-    LOG::LogF(LOGERROR, "Malformed JSON data in to \"%s\" property", PROP_DRM.data());
+    LOG::LogF(LOGERROR, "Malformed JSON data in to \"%.*s\" property",
+              static_cast<int>(PROP_DRM.length()), PROP_DRM.data());
     return false;
   }
 
@@ -742,7 +750,7 @@ bool ADP::KODI_PROPS::CCompKodiProps::ParseDrmLegacyConfig(const std::string& da
 
   if (!DRM::IsValidKeySystem(keySystem))
   {
-    LOG::LogF(LOGERROR, "Unknown key system \"%s\" on DRM legacy property", keySystem.data());
+    LOG::LogF(LOGERROR, "Unknown key system \"%s\" on DRM legacy property", keySystem.c_str());
     return false;
   }
 
