@@ -39,7 +39,7 @@ bool adaptive::CSmoothTree::Open(std::string_view url,
   SaveManifest("", data, "");
 
   manifest_url_ = url;
-  base_url_ = URL::GetUrlPath(url.data());
+  base_url_ = URL::GetUrlPath(std::string(url));
 
   if (!ParseManifest(data))
     return false;
@@ -156,7 +156,8 @@ void adaptive::CSmoothTree::ParseTagStreamIndex(pugi::xml_node nodeSI,
     if (subtype == "ZOET" || // Trick mode
         subtype == "CHAP") // Chapter headings
     {
-      LOG::LogF(LOGDEBUG, "Skipped <StreamIndex> tag, Subtype \"%s\" not supported.", subtype.data());
+      LOG::LogF(LOGDEBUG, "Skipped <StreamIndex> tag, Subtype \"%.*s\" not supported.",
+                static_cast<int>(subtype.length()), subtype.data());
       return;
     }
     adpSet->SetStreamType(StreamType::VIDEO);
@@ -174,8 +175,8 @@ void adaptive::CSmoothTree::ParseTagStreamIndex(pugi::xml_node nodeSI,
         subtype == "DATA" || // Application data
         subtype == "ADI3") // ADS sparse tracks
     {
-      LOG::LogF(LOGDEBUG, "Skipped <StreamIndex> tag, Subtype \"%s\" not supported.",
-                subtype.data());
+      LOG::LogF(LOGDEBUG, "Skipped <StreamIndex> tag, Subtype \"%.*s\" not supported.",
+                static_cast<int>(subtype.length()), subtype.data());
       return;
     }
     else if (subtype == "CAPT" || subtype == "DESC") // Captions
@@ -219,7 +220,7 @@ void adaptive::CSmoothTree::ParseTagStreamIndex(pugi::xml_node nodeSI,
                 "Skipped <StreamIndex> tag, {bitrate} placeholder is missing in the url.");
       return;
     }
-    adpSet->SetBaseUrl(URL::Join(base_url_, url.data()));
+    adpSet->SetBaseUrl(URL::Join(base_url_, std::string(url)));
   }
 
   // Parse <c> tags (Chunk identifier for segment of data)
@@ -450,8 +451,9 @@ bool adaptive::CSmoothTree::InsertLiveFragment(PLAYLIST::CAdaptationSet* adpSet,
   segCopy.m_time = fTimestamp;
   segCopy.m_number++;
 
-  LOG::Log(LOGDEBUG, "Insert fragment to adaptation set \"%s\" (PTS: %llu, number: %llu)",
-           adpSet->GetId().data(), segCopy.startPTS_, segCopy.m_number);
+  LOG::Log(LOGDEBUG, "Insert fragment to adaptation set \"%.*s\" (PTS: %llu, number: %llu)",
+           static_cast<int>(adpSet->GetId().length()), adpSet->GetId().data(), segCopy.startPTS_,
+           segCopy.m_number);
 
   for (auto& repr : adpSet->GetRepresentations())
   {
