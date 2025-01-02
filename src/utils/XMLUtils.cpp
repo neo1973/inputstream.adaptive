@@ -80,7 +80,7 @@ double UTILS::XML::ParseDuration(std::string_view durationStr)
 
   if (matches.size() == 0)
   {
-    LOG::LogF(LOGWARNING, "Duration string \"%s\" is not valid.", durationStr);
+    LOG::LogF(LOGWARNING, "Duration string \"{}\" is not valid.", durationStr);
     return 0;
   }
 

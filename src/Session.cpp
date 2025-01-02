@@ -127,7 +127,7 @@ bool SESSION::CSession::Initialize(std::string manifestUrl)
     SetSupportedDecrypterURN(supportedKeySystems);
     for (std::string_view keySystem : supportedKeySystems)
     {
-      LOG::Log(LOGDEBUG, "Supported URN: %s", keySystem.data());
+      LOG::Log(LOGDEBUG, "Supported URN: {}", keySystem.data());
     }
   }
 
@@ -179,7 +179,7 @@ bool SESSION::CSession::Initialize(std::string manifestUrl)
 
   if (!m_adaptiveTree->Open(manifestResp.effectiveUrl, manifestResp.headers, manifestResp.data))
   {
-    LOG::Log(LOGERROR, "Cannot parse the manifest (%s)", manifestUrl.c_str());
+    LOG::Log(LOGERROR, "Cannot parse the manifest ({})", manifestUrl.c_str());
     return false;
   }
 
@@ -223,7 +223,7 @@ void SESSION::CSession::CheckHDCP()
       if (repr->GetHdcpVersion() > ssd_caps.hdcpVersion ||
           (ssd_caps.hdcpLimit > 0 && repr->GetWidth() * repr->GetHeight() > ssd_caps.hdcpLimit))
       {
-        LOG::Log(LOGDEBUG, "Representation ID \"%s\" removed as not HDCP compliant",
+        LOG::Log(LOGDEBUG, "Representation ID \"{}\" removed as not HDCP compliant",
                  repr->GetId().data());
         itRepr = adp->GetRepresentations().erase(itRepr);
       }
@@ -251,7 +251,8 @@ bool SESSION::CSession::PreInitializeDRM(std::string& challengeB64,
 
   if (psshData.empty() || kidData.empty())
   {
-    LOG::LogF(LOGERROR, "Invalid DRM pre-init data, must be as: {PSSH as base64}|{KID as base64}");
+    LOG::LogF(LOGERROR,
+              "Invalid DRM pre-init data, must be as: {{PSSH as base64}}|{{KID as base64}}");
     return false;
   }
 
@@ -287,7 +288,7 @@ bool SESSION::CSession::PreInitializeDRM(std::string& challengeB64,
   CCdmSession& session(m_cdmSessions[1]);
 
   std::string hexKid{STRING::ToHexadecimal(decKid)};
-  LOG::LogF(LOGDEBUG, "Initializing session with KID: %s", hexKid.c_str());
+  LOG::LogF(LOGDEBUG, "Initializing session with KID: {}", hexKid.c_str());
 
   if (m_decrypter && (session.m_cencSingleSampleDecrypter =
                           m_decrypter->CreateSingleSampleDecrypter(initData, decKid, "", true,
@@ -379,7 +380,7 @@ bool SESSION::CSession::InitializeDRM(bool addDefaultKID /* = false */)
         }
         else
         {
-          LOG::Log(LOGDEBUG, "License data: Create Widevine PSSH for SmoothStreaming %s",
+          LOG::Log(LOGDEBUG, "License data: Create Widevine PSSH for SmoothStreaming {}",
                    customInitData.empty() ? "" : "(with custom data)");
 
           initData =
@@ -428,7 +429,7 @@ bool SESSION::CSession::InitializeDRM(bool addDefaultKID /* = false */)
 
       if (!defaultKid.empty())
       {
-        LOG::Log(LOGDEBUG, "Initializing stream with KID: %s", defaultKidStr.c_str());
+        LOG::Log(LOGDEBUG, "Initializing stream with KID: {}", defaultKidStr.c_str());
 
         // If a decrypter has the default KID, re-use the same decrypter for also this session
         for (size_t i{1}; i < ses; ++i)
@@ -577,7 +578,8 @@ bool SESSION::CSession::InitializePeriod(bool isSessionOpened /* = false */)
 
     if (adp->GetStreamType() == StreamType::NOTYPE)
     {
-      LOG::LogF(LOGDEBUG, "Skipped streams on adaptation set id \"%s\" due to unsupported/unknown type",
+      LOG::LogF(LOGDEBUG,
+                "Skipped streams on adaptation set id \"{}\" due to unsupported/unknown type",
                 adp->GetId().data());
       continue;
     }
@@ -697,7 +699,7 @@ void SESSION::CSession::UpdateStream(CStream& stream)
 
   if (rep->GetContainerType() == ContainerType::INVALID)
   {
-    LOG::LogF(LOGERROR, "Container type not valid on stream representation ID: %s",
+    LOG::LogF(LOGERROR, "Container type not valid on stream representation ID: {}",
               rep->GetId().data());
     stream.m_isValid = false;
     return;
@@ -792,7 +794,7 @@ void SESSION::CSession::UpdateStream(CStream& stream)
             stream.m_info.SetCodecProfile(STREAMCODEC_PROFILE::VP9CodecProfile3);
             break;
           default:
-            LOG::LogF(LOGWARNING, "Unhandled video codec profile \"%i\" for codec string: %s",
+            LOG::LogF(LOGWARNING, "Unhandled video codec profile \"{}\" for codec string: {}",
                       codecProfileNum, codecStr.c_str());
             break;
         }
@@ -907,7 +909,7 @@ bool SESSION::CSession::IsCDMSessionSecurePath(size_t index)
 {
   if (index >= m_cdmSessions.size())
   {
-    LOG::LogF(LOGERROR, "No CDM session at index %u", index);
+    LOG::LogF(LOGERROR, "No CDM session at index {}", index);
     return false;
   }
 
@@ -919,7 +921,7 @@ std::string SESSION::CSession::GetCDMSession(unsigned int index)
 {
   if (index >= m_cdmSessions.size())
   {
-    LOG::LogF(LOGERROR, "No CDM session at index %u", index);
+    LOG::LogF(LOGERROR, "No CDM session at index {}", index);
     return {};
   }
   return m_cdmSessions[index].m_sessionId;
@@ -930,7 +932,7 @@ std::shared_ptr<Adaptive_CencSingleSampleDecrypter> SESSION::CSession::GetSingle
 {
   if (index >= m_cdmSessions.size())
   {
-    LOG::LogF(LOGERROR, "Index %u out of range, cannot get single sample decrypter", index);
+    LOG::LogF(LOGERROR, "Index {} out of range, cannot get single sample decrypter", index);
     return nullptr;
   }
 
@@ -1104,7 +1106,7 @@ bool SESSION::CSession::SeekTime(double seekTime, unsigned int streamId, bool pr
 
   if ((*pi).get() != m_adaptiveTree->m_currentPeriod)
   {
-    LOG::Log(LOGDEBUG, "SeekTime: seeking into new chapter: %d",
+    LOG::Log(LOGDEBUG, "SeekTime: seeking into new chapter: {}",
              static_cast<int>((pi - m_adaptiveTree->m_periods.begin()) + 1));
     SeekChapter(static_cast<int>(pi - m_adaptiveTree->m_periods.begin()) + 1);
     m_chapterSeekTime = seekTime;
@@ -1194,8 +1196,8 @@ bool SESSION::CSession::SeekTime(double seekTime, unsigned int streamId, bool pr
           double destTime{static_cast<double>(PTSToElapsed(streamReader->PTS())) /
                           STREAM_TIME_BASE};
           LOG::Log(LOGINFO,
-                   "Seek time %0.1lf for stream: %u (physical index %u) continues at %0.1lf "
-                   "(PTS: %llu)",
+                   "Seek time {:0.1f} for stream: {} (physical index {}) continues at {:0.1f} "
+                   "(PTS: {})",
                    seekTime, streamReader->GetStreamId(), stream->m_info.GetPhysicalIndex(),
                    destTime, streamReader->PTS());
           if (stream->m_info.GetStreamType() == INPUTSTREAM_TYPE_VIDEO)
@@ -1282,7 +1284,7 @@ bool SESSION::CSession::OnGetStream(int streamid, kodi::addon::InputstreamInfo& 
         // we are forced to delete all CStream's here, so that when demux reader will starts
         // will have no data to process, and so stop the playback
         // (other streams may have been requested/opened before this one)
-        LOG::Log(LOGERROR, "GetStream(%d): Decrypter for the stream not found", streamid);
+        LOG::Log(LOGERROR, "GetStream({}): Decrypter for the stream not found", streamid);
         DeleteStreams();
         return false;
       }
@@ -1428,7 +1430,7 @@ bool SESSION::CSession::SeekChapter(int ch)
   {
     CPeriod* nextPeriod = m_adaptiveTree->m_periods[ch].get();
     m_adaptiveTree->m_nextPeriod = nextPeriod;
-    LOG::LogF(LOGDEBUG, "Switching to new Period (id=%s, start=%llu, seq=%u)",
+    LOG::LogF(LOGDEBUG, "Switching to new Period (id={}, start={}, seq={})",
               nextPeriod->GetId().data(), nextPeriod->GetStart(), nextPeriod->GetSequence());
 
     for (auto& stream : m_streams)

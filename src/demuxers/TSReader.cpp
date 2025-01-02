@@ -29,18 +29,18 @@ void DebugLog(int level, char* msg)
   switch (level)
   {
     case DEMUX_DBG_ERROR:
-      LOG::Log(LOGERROR, msg);
+      LOG::Log(LOGERROR, "{}", msg);
       break;
     case DEMUX_DBG_WARN:
-      LOG::Log(LOGWARNING, msg);
+      LOG::Log(LOGWARNING, "{}", msg);
       break;
     case DEMUX_DBG_INFO:
-      LOG::Log(LOGINFO, msg);
+      LOG::Log(LOGINFO, "{}", msg);
       break;
     case DEMUX_DBG_DEBUG:
       [[fallthrough]];
     case DEMUX_DBG_PARSE:
-      LOG::Log(LOGDEBUG, msg);
+      LOG::Log(LOGDEBUG, "{}", msg);
       break;
     default:
       break;

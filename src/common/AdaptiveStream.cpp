@@ -63,7 +63,7 @@ AdaptiveStream::AdaptiveStream(AdaptiveTree* tree,
   // Set the class id for debug purpose
   clsId = globalClsId++;
   LOG::Log(LOGDEBUG,
-           "Created AdaptiveStream [AS-%u] with adaptation set ID: \"%s\", stream type: %s", clsId,
+           "Created AdaptiveStream [AS-{}] with adaptation set ID: \"{}\", stream type: {}", clsId,
            adp->GetId().data(), StreamTypeToString(adp->GetStreamType()).data());
 }
 
@@ -111,7 +111,7 @@ bool adaptive::AdaptiveStream::DownloadSegment(const DownloadInfo& downloadInfo)
 {
   if (!downloadInfo.m_segmentBuffer)
   {
-    LOG::LogF(LOGERROR, "[AS-%u] Download failed, no segment buffer", clsId);
+    LOG::LogF(LOGERROR, "[AS-{}] Download failed, no segment buffer", clsId);
     return false;
   }
   return DownloadImpl(downloadInfo, nullptr);
@@ -138,9 +138,9 @@ bool adaptive::AdaptiveStream::DownloadImpl(const DownloadInfo& downloadInfo,
   int statusCode = curl.Open();
 
   if (statusCode == -1)
-    LOG::Log(LOGERROR, "[AS-%u] Download failed, internal error: %s", clsId, url.c_str());
+    LOG::Log(LOGERROR, "[AS-{}] Download failed, internal error: {}", clsId, url.c_str());
   else if (statusCode >= 400)
-    LOG::Log(LOGERROR, "[AS-%u] Download failed, HTTP error %d: %s", clsId, statusCode,
+    LOG::Log(LOGERROR, "[AS-{}] Download failed, HTTP error {}: {}", clsId, statusCode,
              url.c_str());
   else // Start the download
   {
@@ -187,18 +187,18 @@ bool adaptive::AdaptiveStream::DownloadImpl(const DownloadInfo& downloadInfo,
 
     if (downloadStatus == CURL::ReadStatus::ERROR)
     {
-      LOG::Log(LOGERROR, "[AS-%u] Download failed, cannot read chunk: %s", clsId, url.c_str());
+      LOG::Log(LOGERROR, "[AS-{}] Download failed, cannot read chunk: {}", clsId, url.c_str());
     }
     else if (downloadStatus == CURL::ReadStatus::CHUNK_READ)
     {
       // Chunk reading operations have been stopped
-      LOG::Log(LOGDEBUG, "[AS-%u] Download cancelled: %s", clsId, url.c_str());
+      LOG::Log(LOGDEBUG, "[AS-{}] Download cancelled: {}", clsId, url.c_str());
     }
     else if (downloadStatus == CURL::ReadStatus::IS_EOF)
     {
       if (curl.GetTotalByteRead() == 0)
       {
-        LOG::Log(LOGERROR, "[AS-%u] Download failed, no data: %s", clsId, url.c_str());
+        LOG::Log(LOGERROR, "[AS-{}] Download failed, no data: {}", clsId, url.c_str());
         return false;
       }
 
@@ -212,7 +212,7 @@ bool adaptive::AdaptiveStream::DownloadImpl(const DownloadInfo& downloadInfo,
       if (totalBytesRead > minSize)
         m_tree->GetRepChooser()->SetDownloadSpeed(downloadSpeed);
 
-      LOG::Log(LOGDEBUG, "[AS-%u] Download finished: %s (downloaded %zu byte, speed %0.2lf byte/s)",
+      LOG::Log(LOGDEBUG, "[AS-{}] Download finished: {} (downloaded {} byte, speed %0.2lf byte/s)",
                clsId, url.c_str(), totalBytesRead, downloadSpeed);
       return true;
     }
@@ -402,7 +402,8 @@ void AdaptiveStream::worker()
         //! we have to interrupt the sleep when it happens
         std::this_thread::sleep_for(msSleep);
         downloadAttempts++;
-        LOG::Log(LOGWARNING, "[AS-%u] Segment download failed, attempt %zu...", clsId, downloadAttempts);
+        LOG::Log(LOGWARNING, "[AS-{}] Segment download failed, attempt {}...", clsId,
+                 downloadAttempts);
       }
 
       lckdl.lock();
@@ -447,7 +448,7 @@ bool AdaptiveStream::parseIndexRange(PLAYLIST::CRepresentation* rep,
                                      const std::vector<uint8_t>& buffer)
 {
 #ifndef INPUTSTREAM_TEST_BUILD
-  LOG::Log(LOGDEBUG, "[AS-%u] Build segments from SIDX atom...", clsId);
+  LOG::Log(LOGDEBUG, "[AS-{}] Build segments from SIDX atom...", clsId);
   AP4_MemoryByteStream byteStream{reinterpret_cast<const AP4_Byte*>(buffer.data()),
                                   static_cast<AP4_Size>(buffer.size())};
 
@@ -558,13 +559,13 @@ bool AdaptiveStream::parseIndexRange(PLAYLIST::CRepresentation* rep,
     {
       if (!isMoovFound)
       {
-        LOG::LogF(LOGERROR, "[AS-%u] Cannot create init segment, missing MOOV atom in stream",
+        LOG::LogF(LOGERROR, "[AS-{}] Cannot create init segment, missing MOOV atom in stream",
                   clsId);
         return false;
       }
       if (initRangeEnd == NO_VALUE)
       {
-        LOG::LogF(LOGERROR, "[AS-%u] Cannot create init segment, cannot determinate range end",
+        LOG::LogF(LOGERROR, "[AS-{}] Cannot create init segment, cannot determinate range end",
                   clsId);
         return false;
       }
@@ -753,8 +754,8 @@ bool AdaptiveStream::start_stream(const uint64_t startPts)
 
   if (!current_rep_->Timeline().Get(0))
   {
-    LOG::LogF(LOGERROR, "[AS-%u] Segment at position 0 not found from representation id: %s",
-              clsId, current_rep_->GetId().data());
+    LOG::LogF(LOGERROR, "[AS-{}] Segment at position 0 not found from representation id: {}", clsId,
+              current_rep_->GetId().data());
     return false;
   }
 
@@ -832,7 +833,7 @@ bool AdaptiveStream::ensureSegment()
 
     if (valid_segment_buffers_ == 0 && available_segment_buffers_ > 0)
     {
-      LOG::LogF(LOGDEBUG, "[AS-%u] Download not started yet (rep. id \"%s\" period id \"%s\")",
+      LOG::LogF(LOGDEBUG, "[AS-{}] Download not started yet (rep. id \"{}\" period id \"{}\")",
                 clsId, current_rep_->GetId().data(), current_period_->GetId().data());
       return false;
     }
@@ -865,7 +866,7 @@ bool AdaptiveStream::ensureSegment()
         if (!nextSegment && !current_rep_->IsWaitForSegment())
         {
           current_rep_->SetIsWaitForSegment(true);
-          LOG::LogF(LOGDEBUG, "[AS-%u] Begin WaitForSegment stream rep. id \"%s\" period id \"%s\"",
+          LOG::LogF(LOGDEBUG, "[AS-{}] Begin WaitForSegment stream rep. id \"{}\" period id \"{}\"",
                     clsId, current_rep_->GetId().data(), current_period_->GetId().data());
           return false;
         }
@@ -984,7 +985,7 @@ bool AdaptiveStream::ensureSegment()
     }
     else if (available_segment_buffers_ == 0)
     {
-      LOG::LogF(LOGDEBUG, "[AS-%u] End of segments", clsId);
+      LOG::LogF(LOGDEBUG, "[AS-{}] End of segments", clsId);
       state_ = STOPPED;
       return false;
     }
@@ -1140,7 +1141,7 @@ int adaptive::AdaptiveStream::GetTrackType() const
 {
   if (!current_adp_)
   {
-    LOG::LogF(LOGERROR, "[AS-%u] Failed get track type, current adaptation set is nullptr.", clsId);
+    LOG::LogF(LOGERROR, "[AS-{}] Failed get track type, current adaptation set is nullptr.", clsId);
     return AP4_Track::TYPE_UNKNOWN;
   }
 
@@ -1153,8 +1154,8 @@ int adaptive::AdaptiveStream::GetTrackType() const
     case StreamType::SUBTITLE:
       return AP4_Track::TYPE_SUBTITLES;
     default:
-      LOG::LogF(LOGERROR, "[AS-%u] Stream type \"%i\" not mapped to AP4_Track::Type",
-                clsId, static_cast<int>(current_adp_->GetStreamType()));
+      LOG::LogF(LOGERROR, "[AS-{}] Stream type \"{}\" not mapped to AP4_Track::Type", clsId,
+                static_cast<int>(current_adp_->GetStreamType()));
       break;
   }
   return AP4_Track::TYPE_UNKNOWN;
@@ -1164,7 +1165,8 @@ PLAYLIST::StreamType adaptive::AdaptiveStream::GetStreamType() const
 {
   if (!current_adp_)
   {
-    LOG::LogF(LOGERROR, "[AS-%u] Failed get stream type, current adaptation set is nullptr.", clsId);
+    LOG::LogF(LOGERROR, "[AS-{}] Failed get stream type, current adaptation set is nullptr.",
+              clsId);
     return StreamType::NOTYPE;
   }
   return current_adp_->GetStreamType();
@@ -1195,7 +1197,7 @@ bool AdaptiveStream::seek_time(double seek_seconds, bool preceeding, bool& needR
   {
     if (!current_rep_->Timeline().Get(0))
     {
-      LOG::LogF(LOGERROR, "[AS-%u] Segment at position 0 not found from representation id: %s",
+      LOG::LogF(LOGERROR, "[AS-{}] Segment at position 0 not found from representation id: {}",
                 clsId, current_rep_->GetId().data());
       return false;
     }
@@ -1281,7 +1283,7 @@ bool AdaptiveStream::GenerateSidxSegments(PLAYLIST::CRepresentation* rep)
   else if (containerType != ContainerType::MP4 && containerType != ContainerType::WEBM)
   {
     LOG::LogF(LOGERROR,
-              "[AS-%u] Cannot generate segments from SIDX on repr id \"%s\" with container \"%i\"",
+              "[AS-{}] Cannot generate segments from SIDX on repr id \"{}\" with container \"{}\"",
               clsId, rep->GetId().data(), static_cast<int>(containerType));
     return false;
   }
@@ -1353,12 +1355,12 @@ void adaptive::AdaptiveStream::DisposeWorker()
   {
     if (worker_processing_)
     {
-      LOG::LogF(LOGERROR, "[AS-%u] Cannot delete worker thread, download is in progress.", clsId);
+      LOG::LogF(LOGERROR, "[AS-{}] Cannot delete worker thread, download is in progress.", clsId);
       return;
     }
     if (!thread_data_->thread_stop_)
     {
-      LOG::LogF(LOGERROR, "[AS-%u] Cannot delete worker thread, loop is still running.", clsId);
+      LOG::LogF(LOGERROR, "[AS-{}] Cannot delete worker thread, loop is still running.", clsId);
       return;
     }
     delete thread_data_;

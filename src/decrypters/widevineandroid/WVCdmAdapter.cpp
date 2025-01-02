@@ -117,7 +117,7 @@ CWVCdmAdapterA::CWVCdmAdapterA(std::string_view keySystem,
   }
 
   LOG::Log(LOGDEBUG,
-           "MediaDrm initialized (Device unique ID size: %zu, System ID: %s, Security level: %s)",
+           "MediaDrm initialized (Device unique ID size: {}, System ID: {}, Security level: {})",
            strDeviceId.size(), strSystemId.c_str(), strSecurityLevel.c_str());
 }
 
@@ -181,7 +181,7 @@ void CWVCdmAdapterA::OnMediaDrmEvent(const jni::CJNIMediaDrm& mediaDrm,
                                      int extra,
                                      const std::vector<char>& data)
 {
-  LOG::Log(LOGDEBUG, "MediaDrm event: type %i arrived", event);
+  LOG::Log(LOGDEBUG, "MediaDrm event: type {} arrived", event);
 
   CdmMessageType type;
   if (event == jni::CJNIMediaDrm::EVENT_KEY_REQUIRED)

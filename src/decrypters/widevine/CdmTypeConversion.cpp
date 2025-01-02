@@ -64,7 +64,7 @@ cdm::VideoCodec media::ToCdmVideoCodec(const VIDEOCODEC_TYPE codec)
     case VIDEOCODEC_AV1:
       return cdm::VideoCodec::kCodecAv1;
     default:
-      LOG::LogF(LOGWARNING, "Unknown video codec %i", codec);
+      LOG::LogF(LOGWARNING, "Unknown video codec {}", static_cast<int>(codec));
       return cdm::VideoCodec::kUnknownVideoCodec;
   }
 }
@@ -104,7 +104,7 @@ cdm::VideoCodecProfile media::ToCdmVideoCodecProfile(const STREAMCODEC_PROFILE p
     case STREAMCODEC_PROFILE::CodecProfileNotNeeded:
       return cdm::VideoCodecProfile::kProfileNotNeeded;
     default:
-      LOG::LogF(LOGWARNING, "Unknown codec profile %i", profile);
+      LOG::LogF(LOGWARNING, "Unknown codec profile {}", static_cast<int>(profile));
       return cdm::VideoCodecProfile::kUnknownVideoCodecProfile;
   }
 }
@@ -136,7 +136,7 @@ cdm::VideoFormat media::ToCdmVideoFormat(const VIDEOCODEC_FORMAT format)
     case VIDEOCODEC_FORMAT::VIDEOCODEC_FORMAT_YUV444P12:
       return cdm::VideoFormat::kYUV444P12;
     default:
-      LOG::LogF(LOGWARNING, "Unknown video format %i", format);
+      LOG::LogF(LOGWARNING, "Unknown video format {}", static_cast<int>(format));
       return cdm::VideoFormat::kUnknownVideoFormat;
   }
 }
@@ -168,7 +168,7 @@ VIDEOCODEC_FORMAT media::ToSSDVideoFormat(const cdm::VideoFormat format)
     case cdm::VideoFormat::kYUV444P12:
       return VIDEOCODEC_FORMAT_YUV444P12;
     default:
-      LOG::LogF(LOGWARNING, "Unknown video format %i", format);
+      LOG::LogF(LOGWARNING, "Unknown video format {}", static_cast<int>(format));
       return VIDEOCODEC_FORMAT_UNKNOWN;
   }
 }

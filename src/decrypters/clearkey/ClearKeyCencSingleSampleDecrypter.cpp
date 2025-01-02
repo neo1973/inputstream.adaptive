@@ -71,7 +71,7 @@ CClearKeyCencSingleSampleDecrypter::CClearKeyCencSingleSampleDecrypter(
   int statusCode = curl.Open();
   if (statusCode == -1 || statusCode >= 400)
   {
-    LOG::Log(LOGERROR, "License server returned failure (HTTP error %i)", statusCode);
+    LOG::Log(LOGERROR, "License server returned failure (HTTP error {})", statusCode);
     return;
   }
 
@@ -132,7 +132,9 @@ CClearKeyCencSingleSampleDecrypter::CClearKeyCencSingleSampleDecrypter(
     if (STRING::KeyExists(keys, hexDefKid))
       STRING::ToHexBytes(keys.at(hexDefKid), hexKey);
     else
-      LOG::LogF(LOGERROR, "Missing KeyId \"%s\" on DRM configuration", defaultKeyId.data());
+      LOG::LogF(LOGERROR, "Missing KeyId \"{}\" on DRM configuration",
+                std::string_view(reinterpret_cast<const char*>(defaultKeyId.data()),
+                                 defaultKeyId.size()));
   }
 
   AP4_CencSingleSampleDecrypter::Create(AP4_CENC_CIPHER_AES_128_CTR, hexKey.data(),
@@ -243,7 +245,7 @@ bool CClearKeyCencSingleSampleDecrypter::ParseLicenseResponse(std::string data)
 
     if (keyName == "Message" && jDictVal.IsString())
     {
-      LOG::LogF(LOGERROR, "Error in license response: %s", jDictVal.GetString());
+      LOG::LogF(LOGERROR, "Error in license response: {}", jDictVal.GetString());
       return false;
     }
 

@@ -10,6 +10,7 @@
 
 #include "CompKodiProps.h"
 #include "SrvBroker.h"
+#include "kodi/tools/StringUtils.h"
 #include "parser/DASHTree.h"
 #include "parser/HLSTree.h"
 #include "parser/SmoothTree.h"
@@ -48,7 +49,7 @@ adaptive::AdaptiveTree* PLAYLIST_FACTORY::CreateAdaptiveTree(
                 "Check if the content-type header is correctly provided in the manifest response.");
       break;
     default:
-      LOG::LogF(LOGFATAL, "Manifest type %i not handled", type);
+      LOG::LogF(LOGFATAL, "Manifest type {} not handled", static_cast<int>(type));
   };
 
   return nullptr;

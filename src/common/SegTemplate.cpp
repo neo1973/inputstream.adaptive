@@ -201,7 +201,7 @@ std::string PLAYLIST::CSegmentTemplate::FormatIdentifier(std::string_view identi
   if (std::snprintf(substitution, 128, formatTag.c_str(), value) > 0)
     return substitution;
   else
-    LOG::LogF(LOGERROR, "Cannot convert value \"%llu\" with \"%s\" format tag", value,
+    LOG::LogF(LOGERROR, "Cannot convert value \"{}\" with \"{}\" format tag", value,
               formatTag.c_str());
 
   return std::string{identifier};

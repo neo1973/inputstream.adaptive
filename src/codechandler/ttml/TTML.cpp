@@ -93,7 +93,8 @@ bool TTML2SRT::ParseData(const void* buffer, size_t bufferSize)
 
   if (parseRes.status != status_ok)
   {
-    LOG::LogF(LOGERROR, "Failed to parse XML data, error code: %i", parseRes.status);
+    LOG::LogF(LOGERROR, "Failed to parse XML data, error code: {}",
+              static_cast<int>(parseRes.status));
     return false;
   }
 

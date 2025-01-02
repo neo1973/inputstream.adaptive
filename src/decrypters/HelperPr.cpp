@@ -48,7 +48,8 @@ void FixWRMHeader(std::string& xmlData)
   xml_parse_result parseRes = doc.load_buffer(xmlData.c_str(), xmlData.size());
   if (parseRes.status != status_ok)
   {
-    LOG::LogF(LOGERROR, "Failed to parse the Playready header, error code: %i", parseRes.status);
+    LOG::LogF(LOGERROR, "Failed to parse the Playready header, error code: {}",
+              static_cast<int>(parseRes.status));
     return;
   }
 
@@ -151,21 +152,21 @@ bool DRM::PRHeaderParser::Parse(const std::vector<uint8_t>& prHeader)
   {
     if (charParser.CharsLeft() < 2)
     {
-      LOG::LogF(LOGERROR, "Failed parse PlayReady object record %u, cannot read record type", i);
+      LOG::LogF(LOGERROR, "Failed parse PlayReady object record {}, cannot read record type", i);
       return false;
     }
     uint16_t recordType = charParser.ReadLENextUnsignedShort();
 
     if (charParser.CharsLeft() < 2)
     {
-      LOG::LogF(LOGERROR, "Failed parse PlayReady object record %u, cannot read record size", i);
+      LOG::LogF(LOGERROR, "Failed parse PlayReady object record {}, cannot read record size", i);
       return false;
     }
     uint16_t recordSize = charParser.ReadLENextUnsignedShort();
 
     if (charParser.CharsLeft() < recordSize)
     {
-      LOG::LogF(LOGERROR, "Failed parse PlayReady object record %u, cannot read WRM header", i);
+      LOG::LogF(LOGERROR, "Failed parse PlayReady object record {}, cannot read WRM header", i);
       return false;
     }
     if ((recordType & PLAYREADY_WRM_TAG) == PLAYREADY_WRM_TAG)
@@ -182,7 +183,8 @@ bool DRM::PRHeaderParser::Parse(const std::vector<uint8_t>& prHeader)
   xml_parse_result parseRes = doc.load_buffer(xmlData.c_str(), xmlData.size());
   if (parseRes.status != status_ok)
   {
-    LOG::LogF(LOGERROR, "Failed to parse the Playready header, error code: %i", parseRes.status);
+    LOG::LogF(LOGERROR, "Failed to parse the Playready header, error code: {}",
+              static_cast<int>(parseRes.status));
     return false;
   }
 
@@ -194,7 +196,7 @@ bool DRM::PRHeaderParser::Parse(const std::vector<uint8_t>& prHeader)
   }
 
   std::string_view ver = XML::GetAttrib(nodeWRM, "version");
-  LOG::Log(LOGDEBUG, "Parsing Playready header version %s", ver.data());
+  LOG::Log(LOGDEBUG, "Parsing Playready header version {}", ver.data());
 
   xml_node nodeDATA = nodeWRM.child("DATA");
   if (!nodeDATA)
@@ -248,7 +250,7 @@ bool DRM::PRHeaderParser::Parse(const std::vector<uint8_t>& prHeader)
         xml_node nodeKIDS = nodePROTECTINFO.child("KIDS");
         if (nodeKIDS)
         {
-          LOG::Log(LOGDEBUG, "Playready header contains %zu KID's.",
+          LOG::Log(LOGDEBUG, "Playready header contains {} KID's.",
                    XML::CountChilds(nodeKIDS, "KID"));
           // We get the first KID
           xml_node nodeKID = nodeKIDS.child("KID");
@@ -275,7 +277,7 @@ bool DRM::PRHeaderParser::Parse(const std::vector<uint8_t>& prHeader)
       m_KID = ConvertKidtoWv(prKid);
     }
     else
-      LOG::LogF(LOGWARNING, "KID size %zu instead of 16, KID ignored.", prKid.size());
+      LOG::LogF(LOGWARNING, "KID size {} instead of 16, KID ignored.", prKid.size());
   }
 
   xml_node nodeLAURL = nodeDATA.child("LA_URL");
@@ -326,7 +328,7 @@ std::vector<uint8_t> DRM::FixPrHeader(const std::vector<uint8_t>& prHeader)
   {
     if (charParser.CharsLeft() < 2)
     {
-      LOG::LogF(LOGERROR, "Failed parse PlayReady object record %u, cannot read record type", i);
+      LOG::LogF(LOGERROR, "Failed parse PlayReady object record {}, cannot read record type", i);
       return {};
     }
     uint16_t recordType = charParser.ReadLENextUnsignedShort();
@@ -335,14 +337,14 @@ std::vector<uint8_t> DRM::FixPrHeader(const std::vector<uint8_t>& prHeader)
 
     if (charParser.CharsLeft() < 2)
     {
-      LOG::LogF(LOGERROR, "Failed parse PlayReady object record %u, cannot read record size", i);
+      LOG::LogF(LOGERROR, "Failed parse PlayReady object record {}, cannot read record size", i);
       return {};
     }
     uint16_t recordSize = charParser.ReadLENextUnsignedShort();
 
     if (charParser.CharsLeft() < recordSize)
     {
-      LOG::LogF(LOGERROR, "Failed parse PlayReady object record %u, cannot read WRM header", i);
+      LOG::LogF(LOGERROR, "Failed parse PlayReady object record {}, cannot read WRM header", i);
       return {};
     }
     if ((recordType & PLAYREADY_WRM_TAG) == PLAYREADY_WRM_TAG)

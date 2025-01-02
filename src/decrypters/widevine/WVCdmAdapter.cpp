@@ -60,7 +60,7 @@ CWVCdmAdapter::CWVCdmAdapter(const DRM::Config& config, CWVDecrypter* host)
 
   if (!m_cdmAdapter->valid())
   {
-    LOG::Log(LOGERROR, "Unable to load widevine shared library (%s)", cdmPath.c_str());
+    LOG::Log(LOGERROR, "Unable to load widevine shared library ({})", cdmPath.c_str());
     m_cdmAdapter = nullptr;
     return;
   }
@@ -80,7 +80,7 @@ CWVCdmAdapter::~CWVCdmAdapter()
   if (m_cdmAdapter)
   {
     m_cdmAdapter->RemoveClient();
-    // LOG::LogF(LOGDEBUG, "CDM Adapter instances: %u", m_cdmAdapter.use_count());
+    // LOG::LogF(LOGDEBUG, "CDM Adapter instances: {}", m_cdmAdapter.use_count());
     m_cdmAdapter = nullptr;
   }
 }
@@ -92,7 +92,7 @@ void CWVCdmAdapter::OnCDMMessage(const char* session,
                           size_t data_size,
                           uint32_t status)
 {
-  LOG::Log(LOGDEBUG, "CDM message: type %i arrived", msg);
+  LOG::Log(LOGDEBUG, "CDM message: type {} arrived", static_cast<int>(msg));
 
   CdmMessageType type;
   if (msg == CDMADPMSG::kSessionMessage)

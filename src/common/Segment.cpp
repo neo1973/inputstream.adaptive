@@ -18,7 +18,7 @@ const CSegment* PLAYLIST::CSegContainer::Get(size_t pos) const
 
   if (pos >= m_segments.size())
   {
-    LOG::LogF(LOGWARNING, "Position out-of-range (%zu of %zu)", pos, m_segments.size());
+    LOG::LogF(LOGWARNING, "Position out-of-range ({} of {})", pos, m_segments.size());
     return nullptr;
   }
 

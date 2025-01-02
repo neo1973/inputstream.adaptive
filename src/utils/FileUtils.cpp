@@ -27,7 +27,7 @@ bool UTILS::FILESYS::SaveFile(const std::string filePath, const std::string& dat
   kodi::vfs::CFile saveFile;
   if (!saveFile.OpenFileForWrite(filePath, overwrite))
   {
-    LOG::LogF(LOGERROR, "Cannot create file \"%s\".", filePath.c_str());
+    LOG::LogF(LOGERROR, "Cannot create file \"{}\".", filePath.c_str());
     return false;
   }
 
@@ -90,7 +90,7 @@ bool UTILS::FILESYS::CheckDuplicateFilePath(std::string& filePath, uint32_t file
   {
     if (filesLimit != 0 && index > filesLimit)
     {
-      LOG::LogF(LOGERROR, "The file path \"%s\" exceeds the maximum amount of duplicate files.",
+      LOG::LogF(LOGERROR, "The file path \"{}\" exceeds the maximum amount of duplicate files.",
                 filePath.c_str());
       return false;
     }

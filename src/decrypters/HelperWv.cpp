@@ -165,7 +165,7 @@ std::vector<Wrapper> TranslateWrapper(std::string_view wrapper)
       result.emplace_back(Wrapper::URL_ENC);
     else
     {
-      LOG::LogF(LOGERROR, "Cannot translate license wrapper, unknown type \"%s\"", wrapper.c_str());
+      LOG::LogF(LOGERROR, "Cannot translate license wrapper, unknown type \"{}\"", wrapper.c_str());
       return {Wrapper::AUTO};
     }
   }
@@ -542,13 +542,13 @@ bool DRM::WvUnwrapLicense(std::string_view wrapper,
 
         if (!jHdcpObjValue)
         {
-          LOG::LogF(LOGERROR, "Unable to parse JSON HDCP value, path \"%s\" not found",
+          LOG::LogF(LOGERROR, "Unable to parse JSON HDCP value, path \"{}\" not found",
                     params.at("path_hdcp").c_str());
         }
         else if (!jHdcpObjValue->IsInt())
         {
           LOG::LogF(LOGERROR,
-                    "Unable to parse JSON HDCP value, value with wrong data type on path \"%s\"",
+                    "Unable to parse JSON HDCP value, value with wrong data type on path \"{}\"",
                     params.at("path_hdcp").c_str());
         }
         else
@@ -597,7 +597,7 @@ bool DRM::WvUnwrapLicense(std::string_view wrapper,
 
       if (!node)
       {
-        LOG::LogF(LOGERROR, "Unable to get license data from XML path \"%s\"",
+        LOG::LogF(LOGERROR, "Unable to get license data from XML path \"{}\"",
                   params.at("path_data").c_str());
         return false;
       }

@@ -37,7 +37,7 @@ void AESDecrypter::decrypt(const AP4_UI08* aes_key,
       reinterpret_cast<AP4_Size*>(&dataSize), lastChunk);
   if (!AP4_SUCCEEDED(result))
   {
-    LOG::LogF(LOGERROR, "AES decryption failed: %d", result);
+    LOG::LogF(LOGERROR, "AES decryption failed: {}", result);
   }
   dst.resize(dstOffset + dataSize);
 }

@@ -41,10 +41,10 @@ void CRepresentationChooserManualOSD::Initialize(const ADP::KODI_PROPS::ChooserP
 
   LOG::Log(LOGDEBUG,
            "[Repr. chooser] Configuration\n"
-           "Stream manual selection mode: %i\n"
-           "Resolution max: %ix%i\n"
-           "Resolution max for secure decoder: %ix%i",
-           manualSelMode, m_screenResMax.first, m_screenResMax.second,
+           "Stream manual selection mode: {}\n"
+           "Resolution max: {}x{}\n"
+           "Resolution max for secure decoder: {}x{}",
+           static_cast<int>(manualSelMode), m_screenResMax.first, m_screenResMax.second,
            m_screenResSecureMax.first, m_screenResSecureMax.second);
 }
 
@@ -78,7 +78,7 @@ void CRepresentationChooserManualOSD::PostInit()
 
   LOG::Log(LOGDEBUG,
            "[Repr. chooser] Stream selection conditions\n"
-           "Resolution: %ix%i",
+           "Resolution: {}x{}",
            m_screenWidth, m_screenHeight);
 }
 

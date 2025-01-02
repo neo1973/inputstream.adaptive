@@ -334,7 +334,7 @@ bool UTILS::CURL::DownloadFile(std::string_view url,
 
     if (statusCode == -1)
     {
-      LOG::Log(LOGERROR, "Download failed, internal error: %s", url.data());
+      LOG::Log(LOGERROR, "Download failed, internal error: {}", url.data());
       break;
     }
     else if (statusCode >= 500)
@@ -343,7 +343,7 @@ bool UTILS::CURL::DownloadFile(std::string_view url,
     }
     else if (statusCode >= 400)
     {
-      LOG::Log(LOGERROR, "Download failed, HTTP error %d: %s", statusCode, url.data());
+      LOG::Log(LOGERROR, "Download failed, HTTP error {}: {}", statusCode, url.data());
       break;
     }
     else // Start the download
@@ -352,13 +352,13 @@ bool UTILS::CURL::DownloadFile(std::string_view url,
 
       if (curl.Read(resp.data) != CURL::ReadStatus::IS_EOF)
       {
-        LOG::Log(LOGERROR, "Download failed: %s", statusCode, url.data());
+        LOG::Log(LOGERROR, "Download failed: {}", statusCode, url.data());
         break;
       }
 
       if (resp.data.empty())
       {
-        LOG::Log(LOGERROR, "Download failed, no data: %s", url.data());
+        LOG::Log(LOGERROR, "Download failed, no data: {}", url.data());
         break;
       }
 
@@ -371,7 +371,7 @@ bool UTILS::CURL::DownloadFile(std::string_view url,
       resp.downloadSpeed = curl.GetDownloadSpeed();
       resp.dataSize = curl.GetTotalByteRead();
 
-      LOG::Log(LOGDEBUG, "Download finished: %s (downloaded %zu byte, speed %0.2lf byte/s)",
+      LOG::Log(LOGDEBUG, "Download finished: {} (downloaded {} byte, speed {:0.2f} byte/s)",
                url.data(), curl.GetTotalByteRead(), resp.downloadSpeed);
       return true;
     }

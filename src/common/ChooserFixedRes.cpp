@@ -47,8 +47,8 @@ void CRepresentationChooserFixedRes::Initialize(const ADP::KODI_PROPS::ChooserPr
 
   LOG::Log(LOGDEBUG,
            "[Repr. chooser] Configuration\n"
-           "Resolution max: %ix%i\n"
-           "Resolution max for secure decoder: %ix%i",
+           "Resolution max: {}x{}\n"
+           "Resolution max for secure decoder: {}x{}",
            m_screenResMax.first, m_screenResMax.second, m_screenResSecureMax.first,
            m_screenResSecureMax.second);
 }
@@ -57,7 +57,7 @@ void CRepresentationChooserFixedRes::PostInit()
 {
   LOG::Log(LOGDEBUG,
            "[Repr. chooser] Stream selection conditions\n"
-           "Screen resolution: %ix%i",
+           "Screen resolution: {}x{}",
            m_screenCurrentWidth, m_screenCurrentHeight);
 }
 

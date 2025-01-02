@@ -74,7 +74,7 @@ bool CInputStreamAdaptive::GetStreamIds(std::vector<unsigned int>& ids)
       CStream* stream = m_session->GetStream(i);
       if (!stream)
       {
-        LOG::LogF(LOGERROR, "Cannot get the stream from sid %u", i);
+        LOG::LogF(LOGERROR, "Cannot get the stream from sid {}", i);
         continue;
       }
 
@@ -128,7 +128,7 @@ void CInputStreamAdaptive::GetCapabilities(kodi::addon::InputstreamCapabilities&
 bool CInputStreamAdaptive::GetStream(int streamid, kodi::addon::InputstreamInfo& info)
 {
   // GetStream is called by Kodi twice times, before and after OpenStream.
-  LOG::Log(LOGDEBUG, "GetStream(%d)", streamid);
+  LOG::Log(LOGDEBUG, "GetStream({})", streamid);
 
   // Return false prevents this stream from loading, but does not stop playback,
   // Kodi core will continue to request another stream of same type (a/v)
@@ -153,7 +153,7 @@ void CInputStreamAdaptive::UnlinkIncludedStreams(CStream* stream)
 
 void CInputStreamAdaptive::EnableStream(int streamid, bool enable)
 {
-  LOG::Log(LOGDEBUG, "EnableStream(%d: %s)", streamid, enable ? "true" : "false");
+  LOG::Log(LOGDEBUG, "EnableStream({}: {})", streamid, enable ? "true" : "false");
 
   if (!m_session)
     return;
@@ -171,7 +171,7 @@ void CInputStreamAdaptive::EnableStream(int streamid, bool enable)
 // to allow Kodi demuxer to reset with our changes the stream properties.
 bool CInputStreamAdaptive::OpenStream(int streamid)
 {
-  LOG::Log(LOGDEBUG, "OpenStream(%d)", streamid);
+  LOG::Log(LOGDEBUG, "OpenStream({})", streamid);
   // This method can be called when:
   // - Stream first start
   // - Chapter/period change
@@ -284,7 +284,7 @@ bool CInputStreamAdaptive::OpenStream(int streamid)
       CStream* incStream = m_session->GetStream(sid);
       if (!incStream)
       {
-        LOG::LogF(LOGERROR, "Cannot get the stream from sid %u", sid);
+        LOG::LogF(LOGERROR, "Cannot get the stream from sid {}", sid);
       }
       else
       {
@@ -300,7 +300,7 @@ bool CInputStreamAdaptive::OpenStream(int streamid)
 
   if (stream->m_isEncrypted && m_session->IsCDMSessionSecurePath(cdmSessionIndex))
   {
-    LOG::Log(LOGDEBUG, "OpenStream(%d): Create secure crypto session", streamid);
+    LOG::Log(LOGDEBUG, "OpenStream({}): Create secure crypto session", streamid);
 
     // StreamCryptoSession enable the use of ISA VideoCodecAdaptive decoder
     kodi::addon::StreamCryptoSession cryptoSession;
@@ -339,7 +339,7 @@ DEMUX_PACKET* CInputStreamAdaptive::DemuxRead(void)
 
   if (~m_failedSeekTime)
   {
-    LOG::Log(LOGDEBUG, "Seeking to last failed seek position (%d)", m_failedSeekTime);
+    LOG::Log(LOGDEBUG, "Seeking to last failed seek position ({})", m_failedSeekTime);
     m_session->SeekTime(static_cast<double>(m_failedSeekTime) * 0.001f, 0, false);
     m_failedSeekTime = ~0;
   }
@@ -402,7 +402,7 @@ DEMUX_PACKET* CInputStreamAdaptive::DemuxRead(void)
         std::memcpy(p->pData, pData, iSize);
       }
 
-      //LOG::Log(LOGDEBUG, "DTS: %0.4f, PTS:%0.4f, ID: %u SZ: %d", p->dts, p->pts, p->iStreamId, p->iSize);
+      //LOG::Log(LOGDEBUG, "DTS: {:0.4f}, PTS:{:0.4f}, ID: {} SZ: {}", p->dts, p->pts, p->iStreamId, p->iSize);
 
       // Start reading the next sample
       sr->ReadSampleAsync();
@@ -460,7 +460,7 @@ bool CInputStreamAdaptive::PosTime(int ms)
   if (!m_session)
     return false;
 
-  LOG::Log(LOGINFO, "PosTime (%d)", ms);
+  LOG::Log(LOGINFO, "PosTime ({})", ms);
 
   bool ret = m_session->SeekTime(static_cast<double>(ms) * 0.001f, 0, false);
   m_failedSeekTime = ret ? ~0 : ms;

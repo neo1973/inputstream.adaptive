@@ -74,7 +74,7 @@ std::string DRM::UrnToSystemId(std::string_view urn)
 
   if (sysId.size() != 32)
   {
-    LOG::Log(LOGERROR, "Cannot convert URN (%s) to System ID", urn.data());
+    LOG::Log(LOGERROR, "Cannot convert URN ({}) to System ID", urn.data());
     return "";
   }
   return sysId;
@@ -147,7 +147,7 @@ std::vector<uint8_t> DRM::ConvertKidStrToBytes(std::string_view kidStr)
 {
   if (kidStr.size() != 32)
   {
-    LOG::LogF(LOGERROR, "Cannot convert KID \"%s\" as bytes due to wrong size", kidStr.data());
+    LOG::LogF(LOGERROR, "Cannot convert KID \"{}\" as bytes due to wrong size", kidStr.data());
     return {};
   }
 
@@ -200,7 +200,7 @@ std::vector<uint8_t> DRM::PSSH::Make(const uint8_t* systemId,
   }
   if (version > 1)
   {
-    LOG::LogF(LOGERROR, "Cannot make PSSH, version %u not supported", version);
+    LOG::LogF(LOGERROR, "Cannot make PSSH, version {} not supported", version);
     return {};
   }
   if (initData.empty() && keyIds.empty())

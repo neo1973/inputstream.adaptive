@@ -66,7 +66,7 @@ bool CWVDecrypter::Initialize()
   m_hdlLibLoader = dlopen(binaryPath.c_str(), RTLD_GLOBAL | RTLD_LAZY);
   if (!m_hdlLibLoader)
   {
-    LOG::LogF(LOGERROR, "Failed to load CDM aarch64 loader from path \"%s\", error: %s",
+    LOG::LogF(LOGERROR, "Failed to load CDM aarch64 loader from path \"{}\", error: {}",
               binaryPath.c_str(), dlerror());
     return false;
   }

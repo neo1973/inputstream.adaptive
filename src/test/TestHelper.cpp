@@ -22,7 +22,7 @@ bool testHelper::LoadFile(std::string path, std::string& data)
   FILE* f = fopen(path.c_str(), "rb");
   if (!f)
   {
-    LOG::LogF(LOGERROR, "Failed open file %s", path.c_str());
+    LOG::LogF(LOGERROR, "Failed open file {}", path.c_str());
     return false;
   }
 

@@ -50,7 +50,7 @@ protected:
     UTILS::CURL::HTTPResponse resp;
     if (!testHelper::DownloadFile(url, {}, {}, resp))
     {
-      LOG::Log(LOGERROR, "Cannot download \"%s\" DASH manifest file.", url.c_str());
+      LOG::Log(LOGERROR, "Cannot download \"{}\" DASH manifest file.", url.c_str());
       exit(1);
     }
 
@@ -64,7 +64,7 @@ protected:
     // Parse the manifest
     if (!tree->Open(resp.effectiveUrl, resp.headers, resp.data))
     {
-      LOG::Log(LOGERROR, "Cannot open \"%s\" Smooth Streaming manifest.", url.c_str());
+      LOG::Log(LOGERROR, "Cannot open \"{}\" Smooth Streaming manifest.", url.c_str());
       exit(1);
     }
     tree->PostOpen();

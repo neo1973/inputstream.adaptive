@@ -301,7 +301,7 @@ bool CFragmentedSampleReader::GetFragmentInfo(uint64_t& duration)
     duration = fragSampleTable->GetDuration();
   else
   {
-    LOG::LogF(LOGERROR, "Can't get FragmentSampleTable from track %u", m_track->GetId());
+    LOG::LogF(LOGERROR, "Can't get FragmentSampleTable from track {}", m_track->GetId());
     return false;
   }
   return true;
@@ -323,11 +323,12 @@ AP4_Result CFragmentedSampleReader::ProcessMoof(AP4_ContainerAtom* moof,
     if (m_track->GetId() == AP4_TRACK_ID_UNKNOWN)
     {
       m_track->SetId(ids[0]);
-      LOG::LogF(LOGDEBUG, "Track ID changed from UNKNOWN to %u", ids[0]);
+      LOG::LogF(LOGDEBUG, "Track ID changed from UNKNOWN to {}", ids[0]);
     }
     else if (ids[0] != m_track->GetId())
     {
-      LOG::LogF(LOGDEBUG, "Track ID does not match! Expected: %u Got: %u", m_track->GetId(), ids[0]);
+      LOG::LogF(LOGDEBUG, "Track ID does not match! Expected: {} Got: {}", m_track->GetId(),
+                ids[0]);
       return AP4_ERROR_NO_SUCH_ITEM;
     }
   }
@@ -459,7 +460,7 @@ AP4_Result CFragmentedSampleReader::ProcessMoof(AP4_ContainerAtom* moof,
       else if (schemeType == AP4_PROTECTION_SCHEME_TYPE_CBC1 ||
                schemeType == AP4_PROTECTION_SCHEME_TYPE_CENS)
       {
-        LOG::LogF(LOGERROR, "Protection scheme %u not implemented.", schemeType);
+        LOG::LogF(LOGERROR, "Protection scheme {} not implemented.", schemeType);
       }
     }
   }
@@ -485,7 +486,7 @@ void CFragmentedSampleReader::UpdateSampleDescription()
   AP4_SampleDescription* desc = m_track->GetSampleDescription(m_sampleDescIndex - 1);
   if (!desc)
   {
-    LOG::LogF(LOGERROR, "Cannot get sample description from index %u", m_sampleDescIndex - 1);
+    LOG::LogF(LOGERROR, "Cannot get sample description from index {}", m_sampleDescIndex - 1);
     return;
   }
 
@@ -500,9 +501,9 @@ void CFragmentedSampleReader::UpdateSampleDescription()
     }
   }
 
-  LOG::LogF(LOGDEBUG, "Codec fourcc: %s (%u)", CODEC::FourCCToString(desc->GetFormat()).c_str(),
+  LOG::LogF(LOGDEBUG, "Codec fourcc: {} ({})", CODEC::FourCCToString(desc->GetFormat()).c_str(),
             desc->GetFormat());
-  
+
   if (AP4_DYNAMIC_CAST(AP4_AudioSampleDescription, desc))
   {
     // Audio sample of any format
@@ -575,7 +576,7 @@ void CFragmentedSampleReader::ParseTrafTfrf(AP4_UuidAtom* uuidAtom)
     }
     else
     {
-      LOG::LogF(LOGWARNING, "Version %u of TFRF atom fragment is not supported.", version);
+      LOG::LogF(LOGWARNING, "Version {} of TFRF atom fragment is not supported.", version);
       return;
     }
     m_observer->OnTFRFatom(time, duration, m_track->GetMediaTimeScale());

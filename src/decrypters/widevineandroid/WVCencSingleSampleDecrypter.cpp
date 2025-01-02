@@ -42,7 +42,7 @@ CWVCencSingleSampleDecrypterA::CWVCencSingleSampleDecrypterA(
 
   if (pssh.size() < 4 || pssh.size() > 65535)
   {
-    LOG::LogF(LOGERROR, "PSSH init data with length %zu seems not to be cenc init data",
+    LOG::LogF(LOGERROR, "PSSH init data with length {} seems not to be cenc init data",
               pssh.size());
     return;
   }
@@ -123,7 +123,8 @@ RETRY_OPEN:
     int maxSecuritylevel = m_cdmAdapter->GetCDM()->getMaxSecurityLevel();
     xbmc_jnienv()->ExceptionClear();
 
-    LOG::Log(LOGDEBUG, "Session ID: %s, Max security level: %d", m_sessionId.c_str(), maxSecuritylevel);
+    LOG::Log(LOGDEBUG, "Session ID: {}, Max security level: {}", m_sessionId.c_str(),
+             maxSecuritylevel);
   }
 }
 
@@ -149,7 +150,7 @@ CWVCencSingleSampleDecrypterA::~CWVCencSingleSampleDecrypterA()
       xbmc_jnienv()->ExceptionClear();
     }
     else
-      LOG::LogF(LOGDEBUG, "MediaDrm Session ID %s closed", m_sessionId.c_str());
+      LOG::LogF(LOGDEBUG, "MediaDrm Session ID {} closed", m_sessionId.c_str());
 
     m_sessionIdVec.clear();
     m_sessionId.clear();
@@ -194,7 +195,7 @@ void CWVCencSingleSampleDecrypterA::GetCapabilities(const std::vector<uint8_t>& 
     caps.hdcpLimit = m_resolutionLimit; //No restriction
     caps.flags |= DRM::DecrypterCapabilites::SSD_SECURE_DECODER;
   }
-  LOG::LogF(LOGDEBUG, "hdcpLimit: %i", caps.hdcpLimit);
+  LOG::LogF(LOGDEBUG, "hdcpLimit: {}", caps.hdcpLimit);
 
   caps.hdcpVersion = 99;
 }
@@ -212,7 +213,8 @@ void CWVCencSingleSampleDecrypterA::OnNotify(const CdmMessage& message)
 
 bool CWVCencSingleSampleDecrypterA::ProvisionRequest()
 {
-  LOG::Log(LOGWARNING, "Provision data request (MediaDrm instance: %p)", m_cdmAdapter->GetCDM().get());
+  LOG::Log(LOGWARNING, "Provision data request (MediaDrm instance: {:x})",
+           reinterpret_cast<uintptr_t>(m_cdmAdapter->GetCDM().get()));
 
   jni::CJNIMediaDrmProvisionRequest request = m_cdmAdapter->GetCDM()->getProvisionRequest();
   if (xbmc_jnienv()->ExceptionCheck())
@@ -225,7 +227,7 @@ bool CWVCencSingleSampleDecrypterA::ProvisionRequest()
   std::vector<uint8_t> provData = request.getData();
   std::string url = request.getDefaultUrl();
 
-  LOG::Log(LOGDEBUG, "Provision data size: %lu, url: %s", provData.size(), url.c_str());
+  LOG::Log(LOGDEBUG, "Provision data size: {}, url: {}", provData.size(), url.c_str());
 
   std::string reqData("{\"signedRequest\":\"");
   reqData += std::string(provData.cbegin(), provData.cend());
@@ -283,7 +285,7 @@ bool CWVCencSingleSampleDecrypterA::GetKeyRequest(std::vector<uint8_t>& keyReque
   }
 
   keyRequestData = keyRequest.getData();
-  LOG::Log(LOGDEBUG, "Key request successful size: %lu", keyRequestData.size());
+  LOG::Log(LOGDEBUG, "Key request successful size: {}", keyRequestData.size());
   return true;
 }
 
@@ -321,14 +323,14 @@ bool CWVCencSingleSampleDecrypterA::KeyUpdateRequest(bool waitKeys, bool skipSes
   {
     int securityLevel = m_cdmAdapter->GetCDM()->getSecurityLevel(m_sessionIdVec);
     xbmc_jnienv()->ExceptionClear();
-    LOG::Log(LOGDEBUG, "Security level: %d", securityLevel);
+    LOG::Log(LOGDEBUG, "Security level: {}", securityLevel);
 
     std::map<std::string, std::string> keyStatus =
         m_cdmAdapter->GetCDM()->queryKeyStatus(m_sessionIdVec);
-    LOG::Log(LOGDEBUG, "Key status (%ld):", keyStatus.size());
+    LOG::Log(LOGDEBUG, "Key status ({}):", keyStatus.size());
     for (auto const& ks : keyStatus)
     {
-      LOG::Log(LOGDEBUG, "-> %s -> %s", ks.first.c_str(), ks.second.c_str());
+      LOG::Log(LOGDEBUG, "-> {} -> {}", ks.first.c_str(), ks.second.c_str());
     }
   }
   return true;
@@ -391,7 +393,7 @@ bool CWVCencSingleSampleDecrypterA::SendSessionMessage(const std::vector<uint8_t
 
   if (statusCode == -1 || statusCode >= 400)
   {
-    LOG::Log(LOGERROR, "License server returned failure (HTTP error %i)", statusCode);
+    LOG::Log(LOGERROR, "License server returned failure (HTTP error {})", statusCode);
     return false;
   }
 
@@ -638,7 +640,7 @@ AP4_Result CWVCencSingleSampleDecrypterA::DecryptSampleData(AP4_UI32 poolId,
 
           if (nalsize + fragInfo.m_nalLengthSize + nalUnitSum > summedBytes)
           {
-            LOG::LogF(LOGERROR, "NAL Unit exceeds subsample definition (nls: %u) %u -> %u ",
+            LOG::LogF(LOGERROR, "NAL Unit exceeds subsample definition (nls: {}) {} -> {} ",
                       static_cast<unsigned int>(fragInfo.m_nalLengthSize),
                       static_cast<unsigned int>(nalsize + fragInfo.m_nalLengthSize + nalUnitSum),
                       summedBytes);
@@ -651,7 +653,7 @@ AP4_Result CWVCencSingleSampleDecrypterA::DecryptSampleData(AP4_UI32 poolId,
       }
       if (packetIn != packetInEnd || subsampleCount)
       {
-        LOG::LogF(LOGERROR, "NAL Unit definition incomplete (nls: %d) %d -> %u ",
+        LOG::LogF(LOGERROR, "NAL Unit definition incomplete (nls: {}) {} -> {} ",
                   fragInfo.m_nalLengthSize, (int)(packetInEnd - packetIn), subsampleCount);
         return AP4_ERROR_NOT_SUPPORTED;
       }

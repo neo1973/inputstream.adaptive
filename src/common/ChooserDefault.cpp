@@ -73,11 +73,11 @@ void CRepresentationChooserDefault::Initialize(const ADP::KODI_PROPS::ChooserPro
 
   LOG::Log(LOGDEBUG,
            "[Repr. chooser] Configuration\n"
-           "Resolution max: %ix%i\n"
-           "Resolution max for secure decoder: %ix%i\n"
-           "Bandwidth limits (bit/s): min %u, max %u\n"
-           "Ignore screen resolution: %i\n"
-           "Ignore screen resolution change: %i",
+           "Resolution max: {}x{}\n"
+           "Resolution max for secure decoder: {}x{}\n"
+           "Bandwidth limits (bit/s): min {}, max {}\n"
+           "Ignore screen resolution: {}\n"
+           "Ignore screen resolution change: {}",
            m_screenResMax.first, m_screenResMax.second, m_screenResSecureMax.first,
            m_screenResSecureMax.second, m_bandwidthMin, m_bandwidthMax, m_ignoreScreenRes,
            m_ignoreScreenResChange);
@@ -109,8 +109,8 @@ void CRepresentationChooserDefault::PostInit()
 
   LOG::Log(LOGDEBUG,
            "[Repr. chooser] Stream selection conditions\n"
-           "Screen resolution: %ix%i (may be limited by settings)\n"
-           "Initial bandwidth: %u bit/s",
+           "Screen resolution: {}x{} (may be limited by settings)\n"
+           "Initial bandwidth: {} bit/s",
            m_screenWidth, m_screenHeight, m_bandwidthCurrent);
 }
 
@@ -129,7 +129,7 @@ void CRepresentationChooserDefault::CheckResolution()
     }
     RefreshResolution();
     m_screenResLastUpdate = std::chrono::steady_clock::now();
-    LOG::Log(LOGDEBUG, "[Repr. chooser] Screen resolution has changed: %ix%i", m_screenCurrentWidth,
+    LOG::Log(LOGDEBUG, "[Repr. chooser] Screen resolution has changed: {}x{}", m_screenCurrentWidth,
              m_screenCurrentHeight);
   }
 }
@@ -224,7 +224,7 @@ PLAYLIST::CRepresentation* CRepresentationChooserDefault::GetNextRepresentation(
 
   if (isVideoStreamType) // Only video, to avoid fill too much the log
   {
-    LOG::Log(LOGDEBUG, "[Repr. chooser] Current average bandwidth: %u bit/s (filtered to %u bit/s)",
+    LOG::Log(LOGDEBUG, "[Repr. chooser] Current average bandwidth: {} bit/s (filtered to {} bit/s)",
              m_bandwidthCurrent, bandwidth);
     LogDetails(currentRep, nextRep);
   }

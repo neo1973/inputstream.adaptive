@@ -65,7 +65,8 @@ bool adaptive::CSmoothTree::ParseManifest(const std::string& data)
   xml_parse_result parseRes = doc.load_buffer(data.c_str(), data.size());
   if (parseRes.status != status_ok)
   {
-    LOG::LogF(LOGERROR, "Failed to parse the manifest file, error code: %i", parseRes.status);
+    LOG::LogF(LOGERROR, "Failed to parse the manifest file, error code: {}",
+              static_cast<int>(parseRes.status));
     return false;
   }
 
@@ -156,7 +157,8 @@ void adaptive::CSmoothTree::ParseTagStreamIndex(pugi::xml_node nodeSI,
     if (subtype == "ZOET" || // Trick mode
         subtype == "CHAP") // Chapter headings
     {
-      LOG::LogF(LOGDEBUG, "Skipped <StreamIndex> tag, Subtype \"%s\" not supported.", subtype.data());
+      LOG::LogF(LOGDEBUG, "Skipped <StreamIndex> tag, Subtype \"{}\" not supported.",
+                subtype.data());
       return;
     }
     adpSet->SetStreamType(StreamType::VIDEO);
@@ -174,7 +176,7 @@ void adaptive::CSmoothTree::ParseTagStreamIndex(pugi::xml_node nodeSI,
         subtype == "DATA" || // Application data
         subtype == "ADI3") // ADS sparse tracks
     {
-      LOG::LogF(LOGDEBUG, "Skipped <StreamIndex> tag, Subtype \"%s\" not supported.",
+      LOG::LogF(LOGDEBUG, "Skipped <StreamIndex> tag, Subtype \"{}\" not supported.",
                 subtype.data());
       return;
     }
@@ -210,13 +212,13 @@ void adaptive::CSmoothTree::ParseTagStreamIndex(pugi::xml_node nodeSI,
     if (!STRING::Contains(url, "{start time}", false))
     {
       LOG::LogF(LOGERROR,
-                "Skipped <StreamIndex> tag, {start time} placeholder is missing in the url.");
+                "Skipped <StreamIndex> tag, {{start time}} placeholder is missing in the url.");
       return;
     }
     if (!STRING::Contains(url, "{bitrate}", false))
     {
       LOG::LogF(LOGERROR,
-                "Skipped <StreamIndex> tag, {bitrate} placeholder is missing in the url.");
+                "Skipped <StreamIndex> tag, {{bitrate}} placeholder is missing in the url.");
       return;
     }
     adpSet->SetBaseUrl(URL::Join(base_url_, url.data()));
@@ -428,8 +430,7 @@ bool adaptive::CSmoothTree::InsertLiveFragment(PLAYLIST::CAdaptationSet* adpSet,
   if (!lastSeg)
     return false;
 
-  LOG::Log(LOGDEBUG,
-           "Fragment info - timestamp: %llu, duration: %llu, timescale: %u (PTS base: %llu)",
+  LOG::Log(LOGDEBUG, "Fragment info - timestamp: {}, duration: {}, timescale: {} (PTS base: {})",
            fTimestamp, fDuration, fTimescale, m_ptsBase);
 
   const uint64_t fStartPts =
@@ -450,7 +451,7 @@ bool adaptive::CSmoothTree::InsertLiveFragment(PLAYLIST::CAdaptationSet* adpSet,
   segCopy.m_time = fTimestamp;
   segCopy.m_number++;
 
-  LOG::Log(LOGDEBUG, "Insert fragment to adaptation set \"%s\" (PTS: %llu, number: %llu)",
+  LOG::Log(LOGDEBUG, "Insert fragment to adaptation set \"{}\" (PTS: {}, number: {})",
            adpSet->GetId().data(), segCopy.startPTS_, segCopy.m_number);
 
   for (auto& repr : adpSet->GetRepresentations())

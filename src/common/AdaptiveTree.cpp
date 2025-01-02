@@ -107,7 +107,7 @@ namespace adaptive
     StartUpdateThread();
 
     LOG::Log(LOGINFO,
-             "Manifest successfully parsed (Periods: %zu, Streams in first period: %zu, Type: %s)",
+             "Manifest successfully parsed (Periods: {}, Streams in first period: {}, Type: {})",
              m_periods.size(), m_currentPeriod->GetAdaptationSets().size(),
              m_isLive ? "live" : "VOD");
   }
@@ -208,7 +208,7 @@ namespace adaptive
 
         const uint64_t segEndPtsMs = segment->m_endPts * 1000 / segRep->GetTimescale();
 
-        LOG::LogF(LOGDEBUG, "Check for last segment (period end PTS: %llu, segment end PTS: %llu)",
+        LOG::LogF(LOGDEBUG, "Check for last segment (period end PTS: {}, segment end PTS: {})",
                   pEndPtsMs, segEndPtsMs);
 
         return segEndPtsMs >= pEndPtsMs;
@@ -248,7 +248,7 @@ namespace adaptive
         }
 
         if (FILESYS::SaveFile(filePath, dataToSave, false))
-          LOG::Log(LOGDEBUG, "Manifest saved to: %s", filePath.c_str());
+          LOG::Log(LOGDEBUG, "Manifest saved to: {}", filePath.c_str());
       }
     }
   }

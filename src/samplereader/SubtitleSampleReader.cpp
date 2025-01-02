@@ -43,7 +43,7 @@ bool CSubtitleSampleReader::Initialize(SESSION::CStream* stream)
       m_codecHandler = std::make_unique<TTMLCodecHandler>(nullptr, true);
     else
     {
-      LOG::LogF(LOGERROR, "Codec \"%s\" not implemented", codecInternalName.data());
+      LOG::LogF(LOGERROR, "Codec \"{}\" not implemented", codecInternalName.data());
       return false;
     }
 
@@ -63,7 +63,7 @@ bool CSubtitleSampleReader::Initialize(SESSION::CStream* stream)
       m_codecHandler = std::make_unique<TTMLCodecHandler>(nullptr, false);
     else
     {
-      LOG::LogF(LOGERROR, "Codec \"%s\" not implemented", codecInternalName.data());
+      LOG::LogF(LOGERROR, "Codec \"{}\" not implemented", codecInternalName.data());
       return false;
     }
     return true;
@@ -83,12 +83,12 @@ bool CSubtitleSampleReader::InitializeFile(std::string url)
   int statusCode = curl.Open();
   if (statusCode == -1)
   {
-    LOG::Log(LOGERROR, "Download failed, internal error: %s", url.c_str());
+    LOG::Log(LOGERROR, "Download failed, internal error: {}", url.c_str());
     return false;
   }
   else if (statusCode >= 400)
   {
-    LOG::Log(LOGERROR, "Download failed, HTTP error %d: %s", statusCode, url.c_str());
+    LOG::Log(LOGERROR, "Download failed, HTTP error {}: {}", statusCode, url.c_str());
     return false;
   }
 
@@ -96,7 +96,7 @@ bool CSubtitleSampleReader::InitializeFile(std::string url)
 
   if (curl.Read(data) != CURL::ReadStatus::IS_EOF)
   {
-    LOG::Log(LOGERROR, "Download failed: %s", statusCode, url.c_str());
+    LOG::Log(LOGERROR, "Download failed: {}", statusCode, url.c_str());
     return false;
   }
 

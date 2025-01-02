@@ -86,7 +86,9 @@ void PLAYLIST::CPeriod::DecreasePSSHSetUsageCount(uint16_t pssh_set)
 {
   if (pssh_set >= m_psshSets.size())
   {
-    LOG::LogF(LOGERROR, "Cannot decrease PSSH usage, PSSHSet position %u exceeds the container size", pssh_set);
+    LOG::LogF(LOGERROR,
+              "Cannot decrease PSSH usage, PSSHSet position {} exceeds the container size",
+              pssh_set);
     return;
   }
 

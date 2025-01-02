@@ -61,7 +61,7 @@ IRepresentationChooser* CHOOSER::CreateRepresentationChooser()
   {
     reprChooser = GetReprChooser(props.m_chooserType);
     if (!reprChooser)
-      LOG::Log(LOGERROR, "Stream selection type \"%s\" not exist. Fallback to XML settings");
+      LOG::Log(LOGERROR, "Stream selection type \"{}\" not exist. Fallback to XML settings", props.m_chooserType);
   }
 
   if (!reprChooser)
@@ -91,7 +91,7 @@ void CHOOSER::IRepresentationChooser::OnUpdateScreenRes()
   const auto sInfo = CSrvBroker::GetResources().GetScreenInfo();
 
   LOG::Log(LOGINFO,
-           "[Repr. chooser] Resolution set: %dx%d, max allowed: %dx%d, Adjust refresh rate: %i",
+           "[Repr. chooser] Resolution set: {}x{}, max allowed: {}x{}, Adjust refresh rate: {}",
            sInfo.width, sInfo.height, sInfo.maxWidth, sInfo.maxHeight, m_isAdjustRefreshRate);
 
   // Use case: User chooses to upscale Kodi GUI from TV instead of Kodi engine.
@@ -124,7 +124,7 @@ void CHOOSER::IRepresentationChooser::LogDetails(PLAYLIST::CRepresentation* curr
   {
     LOG::Log(LOGDEBUG,
              "[Repr. chooser] Selected representation\n"
-             "ID %s (Bandwidth: %u bit/s, Resolution: %ix%i)",
+             "ID {} (Bandwidth: {} bit/s, Resolution: {}x{})",
              nextRep->GetId().data(), nextRep->GetBandwidth(), nextRep->GetWidth(),
              nextRep->GetHeight());
   }
@@ -132,8 +132,8 @@ void CHOOSER::IRepresentationChooser::LogDetails(PLAYLIST::CRepresentation* curr
   {
     LOG::Log(LOGDEBUG,
              "[Repr. chooser] Changed representation\n"
-             "Current ID %s (Bandwidth: %u bit/s, Resolution: %ix%i)\n"
-             "Next ID %s (Bandwidth: %u bit/s, Resolution: %ix%i)",
+             "Current ID {} (Bandwidth: {} bit/s, Resolution: {}x{})\n"
+             "Next ID {} (Bandwidth: {} bit/s, Resolution: {}x{})",
              currentRep->GetId().data(), currentRep->GetBandwidth(), currentRep->GetWidth(),
              currentRep->GetHeight(), nextRep->GetId().data(), nextRep->GetBandwidth(),
              nextRep->GetWidth(), nextRep->GetHeight());

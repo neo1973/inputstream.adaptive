@@ -15,6 +15,7 @@
 #include <iostream>
 #endif
 
+#include <format>
 #include <utility>
 
 // To keep in sync with SSDLogLevel on SSD_dll.h
@@ -31,8 +32,14 @@ namespace LOG
 {
 
 template<typename... Args>
-inline void Log(const LogLevel level, const char* format, Args&&... args)
+inline void Log(const LogLevel level, std::format_string<Args...> format, Args&&... args)
 {
+  char buffer[16 * 1024]; // 16k is the maximum kodi logs
+
+  const std::format_to_n_result result =
+      std::format_to_n(std::begin(buffer), sizeof(buffer) - 1, format, std::forward<Args>(args)...);
+  *result.out = '\0';
+
 #ifndef INPUTSTREAM_TEST_BUILD
   ADDON_LOG addonLevel;
 
@@ -54,26 +61,25 @@ inline void Log(const LogLevel level, const char* format, Args&&... args)
       addonLevel = ADDON_LOG::ADDON_LOG_DEBUG;
   }
 
-  kodi::Log(addonLevel, format, std::forward<Args>(args)...);
+  kodi::Log(addonLevel, "%s", buffer);
 #else
-  std::string logStr = kodi::tools::StringUtils::Format(format, std::forward<Args>(args)...);
   switch (level)
   {
   case LogLevel::LOGFATAL:
-    std::cout << "[ LOG-FATAL ] " << logStr << std::endl;
+    std::cout << "[ LOG-FATAL ] " << buffer << std::endl;
     break;
   case LogLevel::LOGERROR:
-    std::cout << "[ LOG-ERROR ] " << logStr << std::endl;
+    std::cout << "[ LOG-ERROR ] " << buffer << std::endl;
     break;
-/*
+    /*
   case LogLevel::LOGWARNING:
-    std::cout << "[ LOG-WARN  ] " << logStr << std::endl;
+    std::cout << "[ LOG-WARN  ] " << buffer << std::endl;
     break;
   case LogLevel::LOGINFO:
-    std::cout << "[ LOG-INFO  ] " << logStr << std::endl;
+    std::cout << "[ LOG-INFO  ] " << buffer << std::endl;
     break;
   case LogLevel::LOGDEBUG:
-    std::cout << "[ LOG-DEBUG ] " << logStr << std::endl;
+    std::cout << "[ LOG-DEBUG ] " << buffer << std::endl;
 */
   default:
     break;
@@ -81,6 +87,6 @@ inline void Log(const LogLevel level, const char* format, Args&&... args)
 #endif
 }
 
-#define LogF(level, format, ...) Log((level), ("%s: " format), __FUNCTION__, ##__VA_ARGS__)
+#define LogF(level, format, ...) Log((level), ("{}: " format), __FUNCTION__, ##__VA_ARGS__)
 
 } // namespace LOG

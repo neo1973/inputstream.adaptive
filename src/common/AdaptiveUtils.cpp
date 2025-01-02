@@ -131,7 +131,7 @@ AP4_Movie* PLAYLIST::CreateMovieAtom(adaptive::AdaptiveStream& adStream,
     // audio SampleDescription atom require different code rework. This means also that CFragmentedSampleReader
     // will use a generic CodecHandler instead of AudioCodecHandler, because will be not able do determine the codec
     LOG::LogF(LOGDEBUG,
-              "Created sample description atom of unknown type for codec \"%s\" because unhandled",
+              "Created sample description atom of unknown type for codec \"{}\" because unhandled",
               codecName.data());
     sampleDesc = new AP4_SampleDescription(AP4_SampleDescription::TYPE_UNKNOWN, 0, 0);
   }

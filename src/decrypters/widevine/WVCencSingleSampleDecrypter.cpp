@@ -37,7 +37,7 @@ void CWVCencSingleSampleDecrypter::SetSession(const std::string sessionId,
 
   m_strSession = sessionId;
   m_challenge.SetData(data, dataSize);
-  LOG::LogF(LOGDEBUG, "Opened widevine session ID: %s", m_strSession.c_str());
+  LOG::LogF(LOGDEBUG, "Opened widevine session ID: {}", m_strSession.c_str());
 }
 
 CWVCencSingleSampleDecrypter::CWVCencSingleSampleDecrypter(
@@ -60,7 +60,7 @@ CWVCencSingleSampleDecrypter::CWVCencSingleSampleDecrypter(
 
   if (pssh.size() < 4 || pssh.size() > 4096)
   {
-    LOG::LogF(LOGERROR, "PSSH init data with length %zu seems not to be cenc init data",
+    LOG::LogF(LOGERROR, "PSSH init data with length {} seems not to be cenc init data",
               pssh.size());
     return;
   }
@@ -188,7 +188,7 @@ void CWVCencSingleSampleDecrypter::GetCapabilities(const std::vector<uint8_t>& k
     }
     catch (const std::exception& e)
     {
-      LOG::LogF(LOGDEBUG, "Decrypt error, assuming secure path: %s", e.what());
+      LOG::LogF(LOGDEBUG, "Decrypt error, assuming secure path: {}", e.what());
       caps.flags |= (DecrypterCapabilites::SSD_SECURE_PATH |
                      DecrypterCapabilites::SSD_ANNEXB_REQUIRED);
     }
@@ -209,11 +209,11 @@ void CWVCencSingleSampleDecrypter::CloseSessionId()
 {
   if (!m_strSession.empty())
   {
-    LOG::LogF(LOGDEBUG, "Closing widevine session ID: %s", m_strSession.c_str());
+    LOG::LogF(LOGDEBUG, "Closing widevine session ID: {}", m_strSession.c_str());
     m_cdmAdapter->GetCDM()->CloseSession(++m_promiseId, m_strSession.data(),
                                                  m_strSession.size());
 
-    LOG::LogF(LOGDEBUG, "Widevine session ID %s closed", m_strSession.c_str());
+    LOG::LogF(LOGDEBUG, "Widevine session ID {} closed", m_strSession.c_str());
     m_strSession.clear();
   }
 }
@@ -294,7 +294,7 @@ bool CWVCencSingleSampleDecrypter::SendSessionMessage()
 
   if (statusCode == -1 || statusCode >= 400)
   {
-    LOG::Log(LOGERROR, "License server returned failure (HTTP error %i)", statusCode);
+    LOG::Log(LOGERROR, "License server returned failure (HTTP error {})", statusCode);
     return false;
   }
 
@@ -450,7 +450,7 @@ void CWVCencSingleSampleDecrypter::RemovePool(AP4_UI32 poolId)
 void CWVCencSingleSampleDecrypter::LogDecryptError(const cdm::Status status,
                                                    const std::vector<uint8_t>& keyId)
 {
-  LOG::LogF(LOGDEBUG, "Decrypt failed with error code: %d and KID: %s", status,
+  LOG::LogF(LOGDEBUG, "Decrypt failed with error code: {} and KID: {}", static_cast<int>(status),
             STRING::ToHexadecimal(keyId).c_str());
 }
 
@@ -639,7 +639,7 @@ AP4_Result CWVCencSingleSampleDecrypter::DecryptSampleData(AP4_UI32 poolId,
 
           if (nalSize + fragInfo.m_nalLengthSize + nalUnitSum > summedBytes)
           {
-            LOG::LogF(LOGERROR, "NAL Unit exceeds subsample definition (nls: %u) %u -> %u ",
+            LOG::LogF(LOGERROR, "NAL Unit exceeds subsample definition (nls: {}) {} -> {} ",
                       static_cast<unsigned int>(fragInfo.m_nalLengthSize),
                       static_cast<unsigned int>(nalSize + fragInfo.m_nalLengthSize + nalUnitSum),
                       summedBytes);
@@ -652,7 +652,7 @@ AP4_Result CWVCencSingleSampleDecrypter::DecryptSampleData(AP4_UI32 poolId,
       }
       if (packetIn != packetInEnd || subsampleCount)
       {
-        LOG::Log(LOGERROR, "NAL Unit definition incomplete (nls: %u) %u -> %u ",
+        LOG::Log(LOGERROR, "NAL Unit definition incomplete (nls: {}) {} -> {} ",
                  static_cast<unsigned int>(fragInfo.m_nalLengthSize),
                  static_cast<unsigned int>(packetInEnd - packetIn), subsampleCount);
         return AP4_ERROR_NOT_SUPPORTED;
@@ -805,7 +805,7 @@ bool CWVCencSingleSampleDecrypter::OpenVideoDecoder(const VIDEOCODEC_INITDATA* i
   m_videoFrames.clear();
   m_isDrained = true;
 
-  LOG::LogF(LOGDEBUG, "Initialization returned status: %s", media::CdmStatusToString(ret).c_str());
+  LOG::LogF(LOGDEBUG, "Initialization returned status: {}", media::CdmStatusToString(ret).c_str());
   return ret == cdm::Status::kSuccess;
 }
 
@@ -858,12 +858,12 @@ VIDEOCODEC_RETVAL CWVCencSingleSampleDecrypter::DecryptAndDecodeVideo(
   }
   else if (status == cdm::Status::kNoKey)
   {
-    LOG::LogF(LOGERROR, "Returned CDM status \"kNoKey\" for KID: %s",
+    LOG::LogF(LOGERROR, "Returned CDM status \"kNoKey\" for KID: {}",
               STRING::ToHexadecimal(inputBuffer.key_id, inputBuffer.key_id_size).c_str());
     return VC_EOF;
   }
 
-  LOG::LogF(LOGDEBUG, "Returned CDM status: %i", status);
+  LOG::LogF(LOGDEBUG, "Returned CDM status: {}", static_cast<int>(status));
   return VC_ERROR;
 }
 

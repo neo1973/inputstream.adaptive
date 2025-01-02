@@ -216,7 +216,7 @@ bool adaptive::CHLSTree::DownloadChildManifest(PLAYLIST::CAdaptationSet* adp,
 {
   if (rep->GetSourceUrl().empty())
   {
-    LOG::LogF(LOGERROR, "Cannot download child manifest, no source url on representation id \"%s\"",
+    LOG::LogF(LOGERROR, "Cannot download child manifest, no source url on representation id \"{}\"",
               rep->GetId().data());
     return false;
   }
@@ -284,14 +284,14 @@ void adaptive::CHLSTree::FixMediaSequence(std::stringstream& streamData,
 
     if (mediaSeqNumber != mediaSeqNumberFix)
     {
-      LOG::Log(LOGWARNING, "Inconsistent EXT-X-MEDIA-SEQUENCE of %llu, corrected to %llu",
+      LOG::Log(LOGWARNING, "Inconsistent EXT-X-MEDIA-SEQUENCE of {}, corrected to {}",
                mediaSeqNumber, mediaSeqNumberFix);
       mediaSeqNumber = mediaSeqNumberFix;
     }
   }
   else
   {
-    LOG::Log(LOGERROR, "Inconsistent EXT-X-MEDIA-SEQUENCE of %llu, cannot be corrected");
+    LOG::Log(LOGERROR, "Inconsistent EXT-X-MEDIA-SEQUENCE of {}, cannot be corrected", mediaSeqNumber);
   }
 }
 
@@ -410,7 +410,7 @@ void adaptive::CHLSTree::FixDiscSequence(std::stringstream& streamData, uint32_t
 
   if (discSeqNumber != discSeqNumberFix)
   {
-    LOG::Log(LOGWARNING, "Inconsistent EXT-X-DISCONTINUITY-SEQUENCE of %u, corrected to %u",
+    LOG::Log(LOGWARNING, "Inconsistent EXT-X-DISCONTINUITY-SEQUENCE of {}, corrected to {}",
              discSeqNumber, discSeqNumberFix);
     discSeqNumber = discSeqNumberFix;
   }
@@ -769,12 +769,12 @@ bool adaptive::CHLSTree::ProcessChildManifest(PLAYLIST::CPeriod* period,
             auto& pCurrRep = pCurrAdp->GetRepresentations()[reprPos];
             pCurrRep->Timeline().Clear();
             pCurrRep->current_segment_ = nullptr;
-            LOG::Log(LOGDEBUG, "Clear outdated period of discontinuity %u",
+            LOG::Log(LOGDEBUG, "Clear outdated period of discontinuity {}",
                      itPeriod->get()->GetSequence());
           }
           else
           {
-            LOG::Log(LOGDEBUG, "Deleted period of discontinuity %u",
+            LOG::Log(LOGDEBUG, "Deleted period of discontinuity {}",
                      itPeriod->get()->GetSequence());
             itPeriod = m_periods.erase(itPeriod);
             continue;
@@ -792,7 +792,7 @@ bool adaptive::CHLSTree::ProcessChildManifest(PLAYLIST::CPeriod* period,
       }
       else
       {
-        LOG::LogF(LOGERROR, "Period of discontinuity %u not found, attempt to advance to the next",
+        LOG::LogF(LOGERROR, "Period of discontinuity {} not found, attempt to advance to the next",
                   discontSeq);
         isSkipUntilDiscont = true;
       }
@@ -975,7 +975,7 @@ void adaptive::CHLSTree::PrepareSegments(PLAYLIST::CPeriod* period,
   if (rep->IsWaitForSegment() &&
       (rep->GetNextSegment() || m_currentPeriod != m_periods.back().get()))
   {
-    LOG::LogF(LOGDEBUG, "End WaitForSegment stream id \"%s\"", rep->GetId().data());
+    LOG::LogF(LOGDEBUG, "End WaitForSegment stream id \"{}\"", rep->GetId().data());
     rep->SetIsWaitForSegment(false);
   }
 }
@@ -997,7 +997,7 @@ void adaptive::CHLSTree::OnDataArrived(uint64_t segNum,
 
     if (psshSet >= psshSets.size())
     {
-      LOG::LogF(LOGERROR, "Cannot get PSSHSet at position %u", psshSet);
+      LOG::LogF(LOGERROR, "Cannot get PSSHSet at position {}", psshSet);
       return;
     }
 
@@ -1369,7 +1369,7 @@ PLAYLIST::EncryptionType adaptive::CHLSTree::ProcessEncryption(
   }
 
   // Unsupported encryption
-  LOG::Log(LOGDEBUG, "Unsupported EXT-X-KEY keyformat \"%s\"", keyFormat.c_str());
+  LOG::Log(LOGDEBUG, "Unsupported EXT-X-KEY keyformat \"{}\"", keyFormat.c_str());
   return EncryptionType::NOT_SUPPORTED;
 }
 
@@ -1394,7 +1394,7 @@ bool adaptive::CHLSTree::GetUriByteData(std::string_view uri, std::vector<uint8_
         return true;
       }
     }
-    LOG::Log(LOGERROR, "Cannot parse URI: %s", uri.data());
+    LOG::Log(LOGERROR, "Cannot parse URI: {}", uri.data());
     return true;
   }
   return false;
@@ -1527,7 +1527,7 @@ bool adaptive::CHLSTree::ParseMultivariantPlaylist(const std::string& data)
 
       if (!STRING::KeyExists(attribs, "BANDWIDTH"))
       {
-        LOG::LogF(LOGERROR, "Skipped EXT-X-STREAM-INF due to to missing bandwidth attribute (%s)",
+        LOG::LogF(LOGERROR, "Skipped EXT-X-STREAM-INF due to to missing bandwidth attribute ({})",
                   tagValue.c_str());
         continue;
       }
@@ -1538,7 +1538,7 @@ bool adaptive::CHLSTree::ParseMultivariantPlaylist(const std::string& data)
         uri = line;
       else
       {
-        LOG::Log(LOGDEBUG, "Skipped EXT-X-STREAM-INF tag due to missing uri (%s)",
+        LOG::Log(LOGDEBUG, "Skipped EXT-X-STREAM-INF tag due to missing uri ({})",
                  tagValue.c_str());
         streamData.seekg(currentStreamPos); // rollback stream to previous line position
         continue;
@@ -1611,7 +1611,7 @@ bool adaptive::CHLSTree::ParseMultivariantPlaylist(const std::string& data)
     if (varFound)
       codecStr = GetAudioCodec(varFound->m_codecs);
     else
-      LOG::LogF(LOGERROR, "Cannot find variant for AUDIO GROUP-ID: %s", r.m_groupId.c_str());
+      LOG::LogF(LOGERROR, "Cannot find variant for AUDIO GROUP-ID: {}", r.m_groupId.c_str());
 
     if (codecStr.empty())
       codecStr = CODEC::FOURCC_MP4A; // Fallback
@@ -1729,7 +1729,7 @@ bool adaptive::CHLSTree::ParseMultivariantPlaylist(const std::string& data)
         if (rFound)
           r = *rFound;
         else
-          LOG::LogF(LOGWARNING, "Undefined GROUP-ID \"%s\" in EXT-X-STREAM-INF variant",
+          LOG::LogF(LOGWARNING, "Undefined GROUP-ID \"{}\" in EXT-X-STREAM-INF variant",
                     var.m_groupIdAudio.c_str());
       }
 

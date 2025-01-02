@@ -53,7 +53,7 @@ void CRepresentationChooserTest::Initialize(const ADP::KODI_PROPS::ChooserProps&
 
   LOG::Log(LOGDEBUG,
            "[Repr. chooser] Configuration\n"
-           "Test mode: %s\n%s",
+           "Test mode: {}\n{}",
            testMode.c_str(), logDetails.c_str());
 }
 
