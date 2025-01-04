@@ -9,7 +9,9 @@
 #include "aes_decrypter.h"
 #include "utils/log.h"
 #include <bento4/Ap4StreamCipher.h>
-#include <kodi/Filesystem.h>
+// #ifndef INPUTSTREAM_TEST_BUILD
+// #include <kodi/Filesystem.h>
+// #endif
 #include <vector>
 
 void AESDecrypter::decrypt(const AP4_UI08* aes_key,

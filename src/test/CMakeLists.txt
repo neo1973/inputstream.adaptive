@@ -11,6 +11,7 @@ add_executable(${BINARY}
     TestSmoothTree.cpp
     TestHelper.cpp
     TestUtils.cpp
+    ../aes_decrypter.cpp
     ../decrypters/Helpers.cpp
     ../decrypters/HelperPr.cpp
     ../decrypters/HelperWv.cpp

@@ -141,23 +141,25 @@ bool TestAdaptiveStream::Download(const DownloadInfo& downloadInfo, std::vector<
   return true;
 }
 
-void AESDecrypter::decrypt(const AP4_UI08* aes_key,
-                           const AP4_UI08* aes_iv,
-                           const AP4_UI08* src,
-                           std::vector<uint8_t>& dst,
-                           size_t dstOffset,
-                           size_t& dataSize,
-                           bool lastChunk)
+void AESDecrypterTest::decrypt(const AP4_UI08* aes_key,
+                               const AP4_UI08* aes_iv,
+                               const AP4_UI08* src,
+                               std::vector<uint8_t>& dst,
+                               size_t dstOffset,
+                               size_t& dataSize,
+                               bool lastChunk)
 {
 }
 
-std::string AESDecrypter::convertIV(const std::string& input)
+std::string AESDecrypterTest::convertIV(const std::string& input)
 {
   std::string result;
   return result;
 }
 
-void AESDecrypter::ivFromSequence(uint8_t* buffer, uint64_t sid){}
+void AESDecrypterTest::ivFromSequence(uint8_t* buffer, uint64_t sid)
+{
+}
 
 std::string DASHTestTree::RunManifestUpdate(std::string manifestUpdFile)
 {
@@ -183,7 +185,7 @@ bool DASHTestTree::DownloadManifestUpd(std::string_view url,
 
 HLSTestTree::HLSTestTree() : CHLSTree() 
 {
-  m_decrypter = std::make_unique<AESDecrypter>(AESDecrypter(std::string()));
+  m_decrypter = std::make_unique<AESDecrypterTest>(std::string());
 }
 
 bool HLSTestTree::DownloadKey(std::string_view url,
