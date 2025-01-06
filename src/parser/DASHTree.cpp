@@ -595,7 +595,7 @@ void adaptive::CDashTree::ParseTagAdaptationSet(pugi::xml_node nodeAdp, PLAYLIST
   xml_node nodeSeglist = nodeAdp.child("SegmentList");
   if (nodeSeglist)
   {
-    CSegmentList segList{adpSet->GetSegmentList()};
+    auto segList = adpSet->GetSegmentList().value_or(CSegmentList());
 
     uint64_t duration;
     if (XML::QueryAttrib(nodeSeglist, "duration", duration))
@@ -841,7 +841,7 @@ void adaptive::CDashTree::ParseTagRepresentation(pugi::xml_node nodeRepr,
   xml_node nodeSeglist = nodeRepr.child("SegmentList");
   if (nodeSeglist)
   {
-    CSegmentList segList{adpSet->GetSegmentList()};
+    auto segList = adpSet->GetSegmentList().value_or(CSegmentList());
 
     uint64_t duration;
     if (XML::QueryAttrib(nodeSeglist, "duration", duration))
