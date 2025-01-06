@@ -583,7 +583,7 @@ void adaptive::CDashTree::ParseTagAdaptationSet(pugi::xml_node nodeAdp, PLAYLIST
   xml_node nodeSegTpl = nodeAdp.child("SegmentTemplate");
   if (nodeSegTpl || period->HasSegmentTemplate())
   {
-    CSegmentTemplate segTemplate{period->GetSegmentTemplate()};
+    auto segTemplate = period->GetSegmentTemplate().value_or(CSegmentTemplate());
 
     if (nodeSegTpl)
       ParseSegmentTemplate(nodeSegTpl, segTemplate);
@@ -824,7 +824,7 @@ void adaptive::CDashTree::ParseTagRepresentation(pugi::xml_node nodeRepr,
   xml_node nodeSegTpl = nodeRepr.child("SegmentTemplate");
   if (nodeSegTpl || adpSet->HasSegmentTemplate())
   {
-    CSegmentTemplate segTemplate{adpSet->GetSegmentTemplate()};
+    auto segTemplate = adpSet->GetSegmentTemplate().value_or(CSegmentTemplate());
 
     if (nodeSegTpl)
       ParseSegmentTemplate(nodeSegTpl, segTemplate);
